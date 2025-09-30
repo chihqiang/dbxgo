@@ -1,6 +1,7 @@
 package output
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/chihqiang/dbxgo/types"
@@ -89,7 +90,7 @@ func NewRabbitMQOutput(cfg RabbitMQConfig) (*RabbitMQOutput, error) {
 }
 
 // Send 将 EventJSON 序列化为 JSON 字符串并发送到 RabbitMQ
-func (r *RabbitMQOutput) Send(event types.EventData) error {
+func (r *RabbitMQOutput) Send(ctx context.Context, event types.EventData) error {
 	body, err := json.Marshal(event)
 	if err != nil {
 		return fmt.Errorf("failed to marshal event: %w", err)

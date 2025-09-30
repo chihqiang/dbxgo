@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"github.com/chihqiang/dbxgo/config"
 	"github.com/chihqiang/dbxgo/output"
 	"github.com/chihqiang/dbxgo/source"
@@ -9,6 +10,7 @@ import (
 	"github.com/urfave/cli/v3"
 	"log/slog"
 	"os"
+	"runtime"
 	"sync"
 )
 
@@ -19,15 +21,20 @@ func ListenCommand() *cli.Command {
 		Usage:                  "Listen to CDC events without sending them to any output",
 		Flags:                  []cli.Flag{},
 		Action: func(ctx context.Context, cmd *cli.Command) error {
-			return Listen(cfg)
+			// 从context中获取配置
+			cfg, ok := ctx.Value(CliContextValueConfig).(*config.Config)
+			if !ok {
+				return fmt.Errorf("config not found in context")
+			}
+			return Listen(ctx, cfg)
 		},
 	}
 }
 
 // Listen 启动整个 CDC 监听流程，包括数据源、存储和输出处理
-func Listen(config *config.Config) error {
+func Listen(ctx context.Context, config *config.Config) error {
 	// 创建 Store 实例
-	iStore, err := store.NewStore(cfg.Store)
+	iStore, err := store.NewStore(config.Store)
 	if err != nil {
 		return err // 返回创建 Store 错误
 	}
@@ -45,7 +52,7 @@ func Listen(config *config.Config) error {
 	}
 
 	// 创建可取消上下文，用于控制 goroutine 生命周期
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(ctx)
 	// 定义关闭回调函数，统一关闭资源
 	closeCallback := func() {
 		slog.Info("closing source and output")
@@ -74,8 +81,8 @@ func Listen(config *config.Config) error {
 		close(sourceErrChan) // 数据源结束后关闭通道
 	}()
 
-	// 定义 worker 数量
-	workerCount := 1
+	// 定义 worker 数量，使用CPU核心数
+	workerCount := runtime.NumCPU()
 	var wg sync.WaitGroup
 	wg.Add(workerCount)
 
@@ -95,7 +102,7 @@ func Listen(config *config.Config) error {
 					}
 					slog.Info("CDC Event", slog.Any("event", event))
 					// 发送事件到输出
-					if err := output.SendWithRetry(iOutput, event, 3); err != nil {
+					if err := output.SendWithRetry(ctx, iOutput, event, 3); err != nil {
 						slog.Error("failed to send event", "workerID", id, "error", err)
 					}
 				case <-ctx.Done():

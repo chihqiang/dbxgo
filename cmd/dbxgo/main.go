@@ -33,8 +33,8 @@ func main() {
 		cmd.ListenCommand(),
 	}
 	app.Action = func(ctx context.Context, command *cli.Command) error {
-		startCmd := cmd.ListenCommand()
-		return startCmd.Action(ctx, startCmd)
+		listenCmd := cmd.ListenCommand()
+		return listenCmd.Action(ctx, command)
 	}
 	if err := app.Run(context.Background(), os.Args); err != nil {
 		log.Fatal(err)

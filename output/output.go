@@ -1,6 +1,7 @@
 package output
 
 import (
+	"context"
 	"github.com/chihqiang/dbxgo/types"
 	"time"
 )
@@ -37,7 +38,7 @@ type Config struct {
 // IOutput 定义事件输出接口
 type IOutput interface {
 	// Send 发送事件到下游
-	Send(event types.EventData) error
+	Send(ctx context.Context, event types.EventData) error
 	// Close 关闭资源
 	Close() error
 }
@@ -54,10 +55,10 @@ func NewOutput(cfg Config) (IOutput, error) {
 }
 
 // SendWithRetry 带重试的发送函数
-func SendWithRetry(output IOutput, event types.EventData, maxRetries int) error {
+func SendWithRetry(ctx context.Context, output IOutput, event types.EventData, maxRetries int) error {
 	var lastErr error
 	for i := 0; i <= maxRetries; i++ {
-		if err := output.Send(event); err == nil {
+		if err := output.Send(ctx, event); err == nil {
 			return nil
 		} else {
 			lastErr = err

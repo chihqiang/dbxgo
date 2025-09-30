@@ -88,13 +88,13 @@ func NewKafkaOutput(cfg KafkaConfig) (*KafkaOutput, error) {
 // 返回:
 //
 //	error 发送失败时返回错误，否则为 nil
-func (k *KafkaOutput) Send(event types.EventData) error {
+func (k *KafkaOutput) Send(ctx context.Context, event types.EventData) error {
 	// 将事件序列化为 JSON 字符串
 	eventValue, err := json.Marshal(event)
 	if err != nil {
 		return err
 	}
-	return k.writer.WriteMessages(context.Background(), kafka.Message{
+	return k.writer.WriteMessages(ctx, kafka.Message{
 		Value: eventValue,
 		Time:  time.Now(),
 	})

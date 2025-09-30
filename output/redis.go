@@ -33,7 +33,6 @@ func DefaultRedisConfig() RedisConfig {
 type RedisOutput struct {
 	cfg RedisConfig
 	rdb *redis.Client
-	ctx context.Context
 	key string
 }
 
@@ -61,27 +60,25 @@ func NewRedisOutput(cfg RedisConfig) (*RedisOutput, error) {
 		Password: cfg.Password,
 		DB:       cfg.DB,
 	})
-	ctx := context.Background()
 	// 测试连接
-	if err := rdb.Ping(ctx).Err(); err != nil {
+	if err := rdb.Ping(context.Background()).Err(); err != nil {
 		return nil, fmt.Errorf("failed to connect Redis: %w", err)
 	}
 	return &RedisOutput{
 		cfg: cfg,
 		rdb: rdb,
-		ctx: ctx,
 		key: cfg.Key,
 	}, nil
 }
 
 // Send 将事件发送到 Redis（使用 List）
-func (r *RedisOutput) Send(event types.EventData) error {
+func (r *RedisOutput) Send(ctx context.Context, event types.EventData) error {
 	data, err := json.Marshal(event)
 	if err != nil {
 		return err
 	}
 	// LPUSH 推送到列表头
-	if err := r.rdb.LPush(r.ctx, r.key, data).Err(); err != nil {
+	if err := r.rdb.LPush(ctx, r.key, data).Err(); err != nil {
 		return fmt.Errorf("failed to push event to Redis: %w", err)
 	}
 	return nil

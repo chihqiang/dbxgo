@@ -36,7 +36,6 @@ func DefaultRocketMQConfig() RocketMQConfig {
 type RocketMQOutput struct {
 	cfg      RocketMQConfig
 	producer rocketmq.Producer
-	ctx      context.Context
 }
 
 // NewRocketMQOutput 创建 RocketMQOutput 并填充默认值
@@ -72,12 +71,11 @@ func NewRocketMQOutput(cfg RocketMQConfig) (*RocketMQOutput, error) {
 	return &RocketMQOutput{
 		cfg:      cfg,
 		producer: p,
-		ctx:      context.Background(),
 	}, nil
 }
 
 // Send 将 EventData 序列化为 JSON 字符串并发送到 RocketMQ
-func (r *RocketMQOutput) Send(event types.EventData) error {
+func (r *RocketMQOutput) Send(ctx context.Context, event types.EventData) error {
 	data, err := json.Marshal(event)
 	if err != nil {
 		return err
@@ -86,7 +84,7 @@ func (r *RocketMQOutput) Send(event types.EventData) error {
 		Topic: r.cfg.Topic,
 		Body:  data,
 	}
-	_, err = r.producer.SendSync(r.ctx, msg)
+	_, err = r.producer.SendSync(ctx, msg)
 	return err
 }
 
