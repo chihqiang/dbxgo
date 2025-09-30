@@ -26,8 +26,8 @@ type RocketMQConfig struct {
 func DefaultRocketMQConfig() RocketMQConfig {
 	return RocketMQConfig{
 		Servers: []string{"127.0.0.1:9876"},
-		Topic:   "dbxgo",
-		Group:   "dbxgo",
+		Topic:   "dbxgo_events",
+		Group:   "dbxgo_group",
 		Retry:   3,
 	}
 }

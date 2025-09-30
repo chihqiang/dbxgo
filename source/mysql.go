@@ -60,14 +60,15 @@ type MysqlConfig struct {
 type MySQLSource struct {
 	// mu 用于保证并发安全的互斥锁
 	mu sync.Mutex
-	// cfg 数据源配置信息
-	cfg   MysqlConfig
-	store store.IStore
-	// 嵌入canal.DummyEventHandler以实现事件处理接口
+	// 嵌入 canal.DummyEventHandler 以实现事件处理接口
 	canal.DummyEventHandler
-	// canal 是MySQL binlog解析器实例
+	// store 存储接口，用于持久化或读取偏移量及状态
+	store store.IStore
+	// canal MySQL binlog 解析器实例
 	canal *canal.Canal
-	// eventDataChan 是事件输出通道
+	// cfg 数据源配置信息
+	cfg MysqlConfig
+	// eventDataChan 事件数据输出通道
 	eventDataChan chan types.EventData
 	// running 表示当前数据源是否正在运行
 	running bool

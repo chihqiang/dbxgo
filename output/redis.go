@@ -26,7 +26,7 @@ func DefaultRedisConfig() RedisConfig {
 		Addr:     "127.0.0.1:6379",
 		Password: "",
 		DB:       0,
-		Key:      "dbxgo",
+		Key:      "dbxgo_events",
 	}
 }
 

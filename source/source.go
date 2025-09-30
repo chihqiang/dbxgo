@@ -30,15 +30,19 @@ type Config struct {
 // ISource 定义数据源接口
 // 所有具体数据源实现必须实现此接口
 type ISource interface {
+	// WithStore 设置存储接口，用于持久化或读取偏移量及状态
 	WithStore(store store.IStore)
+
 	// Run 启动数据源监听
 	// ctx: 上下文，用于控制取消和超时
 	// 返回值: 可能的错误
 	Run(ctx context.Context) error
-	// GetChanEventData 返回事件通道
+
+	// GetChanEventData 返回事件数据通道
 	// 外部通过此通道接收数据库变更事件
-	// 返回值: 只读的事件通道
+	// 返回值: 只读的事件数据通道
 	GetChanEventData() <-chan types.EventData
+
 	// Close 关闭数据源，释放资源
 	// 返回值: 可能的错误
 	Close() error

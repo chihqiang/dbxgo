@@ -95,7 +95,7 @@ source:
       user: "root"           # Database username (recommended to use a dedicated account in production)
       password: "123456"     # Database password
       exclude_table_regex:   # Tables to exclude (regex patterns)
-         - "mysql.*"         
+         - "mysql.*"
          - "information_schema.*"
          - "performance_schema.*"
          - "sys.*"
@@ -111,7 +111,6 @@ output:
       brokers:
          - "127.0.0.1:9092"  # Kafka broker list
       topic: "dbxgo_events"  # Kafka topic name
-      client_id: "dbxgo"     # Kafka client ID
 
    # RabbitMQ settings
    rabbitmq:
@@ -134,7 +133,7 @@ output:
       servers:
          - "127.0.0.1:9876"  # RocketMQ name server address
       topic: "dbxgo_events"  # RocketMQ topic name
-      group: "dbxgo_producer_group" # Producer group name
+      group: "dbxgo_group" # Producer group name
       retry: 2               # Number of retry attempts on failure
 ```
 

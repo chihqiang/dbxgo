@@ -20,6 +20,9 @@ type FileStore struct {
 
 // NewFileStore 创建文件缓存实例
 func NewFileStore(config FileConfig) (*FileStore, error) {
+	if config.Dir == "" {
+		config.Dir = os.TempDir()
+	}
 	if err := os.MkdirAll(config.Dir, 0755); err != nil {
 		return nil, err
 	}
