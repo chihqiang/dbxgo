@@ -3,24 +3,9 @@ package store
 import (
 	"context"
 	"fmt"
+	"github.com/chihqiang/dbxgo/pkg/redisx"
 	"github.com/redis/go-redis/v9"
 )
-
-// RedisConfig Redis 配置
-type RedisConfig struct {
-	Addr     string `yaml:"addr"` // "127.0.0.1:6379"
-	Password string `yaml:"password"`
-	DB       int    `yaml:"db"`
-}
-
-// DefaultRedisConfig 返回 Redis 默认配置
-func DefaultRedisConfig() RedisConfig {
-	return RedisConfig{
-		Addr:     "127.0.0.1:6379",
-		Password: "",
-		DB:       0,
-	}
-}
 
 // RedisStore Redis
 type RedisStore struct {
@@ -29,28 +14,13 @@ type RedisStore struct {
 }
 
 // NewRedisStore 创建 RedisStore
-func NewRedisStore(cfg RedisConfig) (*RedisStore, error) {
-	def := DefaultRedisConfig()
-	if cfg.Addr != "" {
-		def.Addr = cfg.Addr
-	}
-	if cfg.Password != "" {
-		def.Password = cfg.Password
-	}
-	if cfg.DB > 0 {
-		def.DB = cfg.DB
-	}
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     def.Addr,
-		Password: def.Password,
-		DB:       def.DB,
-	})
-	ctx := context.Background()
-	if err := rdb.Ping(ctx).Err(); err != nil {
-		return nil, fmt.Errorf("failed to connect Redis: %w", err)
+func NewRedisStore(cfg redisx.Config) (*RedisStore, error) {
+	rdb, err := redisx.Open(cfg)
+	if err != nil {
+		return nil, err
 	}
 	return &RedisStore{
-		ctx:    ctx,
+		ctx:    context.Background(),
 		client: rdb,
 	}, nil
 }

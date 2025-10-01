@@ -9,7 +9,7 @@ import (
 )
 
 type FileConfig struct {
-	Dir string `yaml:"dir"`
+	Dir string `yaml:"dir" json:"dir" mapstructure:"dir" env:"STORE_FILE_DIR"`
 }
 
 // FileStore 文件缓存实现，每个 key 对应一个文件

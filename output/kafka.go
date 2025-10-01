@@ -12,9 +12,10 @@ import (
 // KafkaConfig Kafka 配置实体，用于初始化 KafkaOutput
 type KafkaConfig struct {
 	// Brokers Kafka broker 列表，例如 ["127.0.0.1:9092"]
-	Brokers []string `yaml:"brokers"`
+	Brokers []string `yaml:"brokers" json:"brokers" mapstructure:"brokers" env:"OUTPUT_KAFKA_BROKERS"`
+
 	// Topic 要发送的 Kafka topic 名称
-	Topic string `yaml:"topic"`
+	Topic string `yaml:"topic" json:"topic" mapstructure:"topic" env:"OUTPUT_KAFKA_TOPIC" envDefault:"dbxgo-events"`
 }
 
 // DefaultKafkaConfig 返回 Kafka 默认配置

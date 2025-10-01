@@ -34,25 +34,11 @@ var (
 //  2. 若 IncludeTableRegex 不为空，则仅包含匹配的表
 //  3. 如果两者都为空，则默认处理全部表
 type MysqlConfig struct {
-	// Addr 数据库地址，格式为 "host:port"
-	// 示例: "127.0.0.1:3306"
-	Addr string `yaml:"addr"`
-
-	// User 数据库用户名
-	// 示例: "root"
-	User string `yaml:"user"`
-
-	// Password 数据库密码
-	// 示例: "123456"
-	Password string `yaml:"password"`
-
-	// ExcludeTableRegex 表排除规则（正则表达式列表）
-	// 用于过滤不需要处理的表（优先级高于 IncludeTableRegex）
-	ExcludeTableRegex []string `yaml:"exclude_table_regex"`
-
-	// IncludeTableRegex 表包含规则（正则表达式列表）
-	// 若不为空，则仅处理匹配到的表
-	IncludeTableRegex []string `yaml:"include_table_regex"`
+	Addr              string   `yaml:"addr" json:"addr" mapstructure:"addr" env:"SOURCE_MYSQL_ADDR" envDefault:"127.0.0.1:3306"`
+	User              string   `yaml:"user" json:"user" mapstructure:"user" env:"SOURCE_MYSQL_USER" envDefault:"root"`
+	Password          string   `yaml:"password" json:"password" mapstructure:"password" env:"SOURCE_MYSQL_PASSWORD" envDefault:""`
+	ExcludeTableRegex []string `yaml:"exclude_table_regex" json:"exclude_table_regex" mapstructure:"exclude_table_regex" env:"SOURCE_MYSQL_EXCLUDE_TABLE_REGEX"`
+	IncludeTableRegex []string `yaml:"include_table_regex" json:"include_table_regex" mapstructure:"include_table_regex" env:"SOURCE_MYSQL_INCLUDE_TABLE_REGEX"`
 }
 
 // MySQLSource 是MySQL数据源的具体实现

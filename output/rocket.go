@@ -13,13 +13,16 @@ import (
 // RocketMQConfig RocketMQ 配置实体
 type RocketMQConfig struct {
 	// Servers 地址列表，例如 ["127.0.0.1:9876"]
-	Servers []string `yaml:"servers"`
+	Servers []string `yaml:"servers" json:"servers" mapstructure:"servers" env:"OUTPUT_ROCKETMQ_SERVERS"`
+
 	// Topic 消息发送到的 topic 名称
-	Topic string `yaml:"topic"`
+	Topic string `yaml:"topic" json:"topic" mapstructure:"topic" env:"OUTPUT_ROCKETMQ_TOPIC" envDefault:"dbxgo-events"`
+
 	// Group 消息生产者分组名称
-	Group string `yaml:"group"`
+	Group string `yaml:"group" json:"group" mapstructure:"group" env:"OUTPUT_ROCKETMQ_GROUP" envDefault:"dbxgo-group"`
+
 	// Retry 发送失败重试次数
-	Retry int `yaml:"retry"`
+	Retry int `yaml:"retry" json:"retry" mapstructure:"retry" env:"OUTPUT_ROCKETMQ_RETRY" envDefault:"3"`
 }
 
 // DefaultRocketMQConfig 返回默认 RocketMQ 配置

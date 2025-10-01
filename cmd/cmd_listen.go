@@ -22,7 +22,7 @@ func ListenCommand() *cli.Command {
 		Flags:                  []cli.Flag{},
 		Action: func(ctx context.Context, cmd *cli.Command) error {
 			// 从context中获取配置
-			cfg, ok := ctx.Value(CliContextValueConfig).(*config.Config)
+			cfg, ok := ctx.Value(ContextValueConfig).(*config.Config)
 			if !ok {
 				return fmt.Errorf("config not found in context")
 			}

@@ -11,12 +11,12 @@ import (
 
 // RabbitMQConfig RabbitMQ 配置实体
 type RabbitMQConfig struct {
-	URL       string `yaml:"url"`       // 连接 URL，例如 amqp://guest:guest@127.0.0.1:5672/
-	Queue     string `yaml:"queue"`     // 队列名
-	Durable   bool   `yaml:"durable"`   // 队列是否持久化
-	AutoAck   bool   `yaml:"auto_ack"`  // 是否自动确认
-	Exclusive bool   `yaml:"exclusive"` // 是否排他队列
-	NoWait    bool   `yaml:"no_wait"`   // 是否等待声明完成
+	URL       string `yaml:"url" json:"url" mapstructure:"url" env:"OUTPUT_RABBITMQ_URL" envDefault:"amqp://guest:guest@127.0.0.1:5672/"`
+	Queue     string `yaml:"queue" json:"queue" mapstructure:"queue" env:"OUTPUT_RABBITMQ_QUEUE" envDefault:"dbxgo-events"`
+	Durable   bool   `yaml:"durable" json:"durable" mapstructure:"durable" env:"OUTPUT_RABBITMQ_DURABLE" envDefault:"true"`
+	AutoAck   bool   `yaml:"auto_ack" json:"auto_ack" mapstructure:"auto_ack" env:"OUTPUT_RABBITMQ_AUTOACK" envDefault:"false"`
+	Exclusive bool   `yaml:"exclusive" json:"exclusive" mapstructure:"exclusive" env:"OUTPUT_RABBITMQ_EXCLUSIVE" envDefault:"false"`
+	NoWait    bool   `yaml:"no_wait" json:"no_wait" mapstructure:"no_wait" env:"OUTPUT_RABBITMQ_NOWAIT" envDefault:"false"`
 }
 
 // DefaultRabbitMQConfig 返回默认配置

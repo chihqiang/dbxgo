@@ -4,7 +4,9 @@ go 1.23.12
 
 require (
 	github.com/apache/rocketmq-client-go/v2 v2.1.2
+	github.com/caarlos0/env/v11 v11.3.1
 	github.com/go-mysql-org/go-mysql v1.13.0
+	github.com/joho/godotenv v1.5.1
 	github.com/rabbitmq/amqp091-go v1.10.0
 	github.com/redis/go-redis/v9 v9.14.0
 	github.com/segmentio/kafka-go v0.4.49

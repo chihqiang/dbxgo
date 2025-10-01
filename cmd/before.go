@@ -6,19 +6,18 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-type CliContextValue string
+type ContextValue string
 
 var (
-	CliContextValueConfig CliContextValue = "config"
+	ContextValueConfig ContextValue = "config"
 )
 
 // Before 加载配置文件并返回
 func Before(ctx context.Context, command *cli.Command) (context.Context, error) {
-	filename := command.String(FlagConfig)
-	conf, err := config.Load(filename)
+	conf, err := config.Load(command.String(FlagConfig))
 	if err != nil {
 		return ctx, err
 	}
-	// 将配置存储在context中，而不是使用全局变量
-	return context.WithValue(ctx, CliContextValueConfig, conf), nil
+	// 把配置放到 context 中
+	return context.WithValue(ctx, ContextValueConfig, conf), nil
 }

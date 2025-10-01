@@ -2,7 +2,7 @@
 store:
   type: file                # Storage type: file / redis
   file:
-    dir: "runtime/"        # Directory for storing offset files
+    dir: "runtime"        # Directory for storing offset files
   redis:
     addr: "127.0.0.1:6379" # Redis address
     password: "123456"     # Redis password (leave empty if none)

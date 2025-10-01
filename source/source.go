@@ -21,10 +21,9 @@ var (
 // 用于配置数据库连接信息和存储配置
 type Config struct {
 	// Type 数据源类型，如 "mysql"
-	Type  SourceType  `yaml:"type"`
-	Mysql MysqlConfig `yaml:"mysql"`
-	// Store 偏移量存储配置
-	Store store.Config `yaml:"store"`
+	Type  SourceType   `yaml:"type" json:"type" mapstructure:"type" env:"SOURCE_TYPE,required"`
+	Mysql MysqlConfig  `yaml:"mysql" json:"mysql" mapstructure:"mysql"`
+	Store store.Config `yaml:"store" json:"store" mapstructure:"store"`
 }
 
 // ISource 定义数据源接口
