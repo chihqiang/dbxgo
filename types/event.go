@@ -1,5 +1,7 @@
 package types
 
+import "time"
+
 // EventRowType 定义数据库操作类型枚举
 // 表示捕获到的数据库变更事件类型
 
@@ -17,7 +19,10 @@ const (
 // EventData 是标准事件结构
 // 表示从数据库捕获到的变更事件
 type EventData struct {
-	Row EventRowData `json:"row"`
+	Time     time.Time    `json:"time"`
+	ServerID int64        `json:"server_id"`
+	Pos      int64        `json:"pos"`
+	Row      EventRowData `json:"row"`
 }
 
 // EventRowData 是标准事件结构

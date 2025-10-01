@@ -196,40 +196,42 @@ func (s *MySQLSource) Close() error {
 // OnRow 处理行变更事件（实现canal.EventHandler接口）
 // e: 行变更事件对象
 // 返回值: 可能的错误
-func (s *MySQLSource) OnRow(e *canal.RowsEvent) error {
+func (s *MySQLSource) OnRow(rowsEvent *canal.RowsEvent) error {
 	// 获取当前时间戳（毫秒）
-	unixMilli := time.Now().UnixMilli()
 	// 处理每一行数据
-	for i := 0; i < len(e.Rows); i++ {
-		row := e.Rows[i]
+	for i := 0; i < len(rowsEvent.Rows); i++ {
+		row := rowsEvent.Rows[i]
 		var event types.EventData
+		event.Time = time.Now()
+		event.Pos = int64(rowsEvent.Header.LogPos)
+		event.ServerID = int64(rowsEvent.Header.ServerID)
 		// 填充事件基本信息
-		event.Row.Time = unixMilli
-		event.Row.Database = e.Table.Schema
-		event.Row.Table = e.Table.Name
+		event.Row.Time = int64(rowsEvent.Header.Timestamp)
+		event.Row.Database = rowsEvent.Table.Schema
+		event.Row.Table = rowsEvent.Table.Name
 		// 根据操作类型处理不同的事件
-		switch e.Action {
+		switch rowsEvent.Action {
 		case canal.InsertAction:
 			event.Row.Type = types.InsertEventRowType
-			event.Row.Data = s.rowToMap(row, e.Table)
+			event.Row.Data = s.rowToMap(row, rowsEvent.Table)
 		case canal.DeleteAction:
 			event.Row.Type = types.DeleteEventRowType
-			event.Row.Data = s.rowToMap(row, e.Table)
+			event.Row.Data = s.rowToMap(row, rowsEvent.Table)
 		case canal.UpdateAction:
 			event.Row.Type = types.UpdateEventRowType
 			oldRow := row
 			// 更新操作会有两行数据：旧数据和新数据
-			if i+1 < len(e.Rows) {
-				newRow := e.Rows[i+1]
-				event.Row.Data = s.rowToMap(newRow, e.Table)
-				event.Row.Old = s.rowToMap(oldRow, e.Table)
+			if i+1 < len(rowsEvent.Rows) {
+				newRow := rowsEvent.Rows[i+1]
+				event.Row.Data = s.rowToMap(newRow, rowsEvent.Table)
+				event.Row.Old = s.rowToMap(oldRow, rowsEvent.Table)
 				i++ // 跳过下一行（新数据）
 			} else {
-				event.Row.Data = s.rowToMap(row, e.Table)
+				event.Row.Data = s.rowToMap(row, rowsEvent.Table)
 			}
 		default:
-			event.Row.Type = types.EventRowType(e.Action)
-			event.Row.Data = s.rowToMap(row, e.Table)
+			event.Row.Type = types.EventRowType(rowsEvent.Action)
+			event.Row.Data = s.rowToMap(row, rowsEvent.Table)
 		}
 		select {
 		case s.eventDataChan <- event:
