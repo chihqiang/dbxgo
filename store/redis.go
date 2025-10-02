@@ -47,3 +47,11 @@ func (r *RedisStore) Get(key string) ([]byte, error) {
 	}
 	return val, err
 }
+func (r *RedisStore) Delete(key string) error {
+	err := r.client.Del(r.ctx, key).Err()
+	if err == redis.Nil {
+		// key 不存在也算删除成功
+		return nil
+	}
+	return err
+}

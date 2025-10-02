@@ -65,3 +65,15 @@ func (fs *FileStore) Get(key string) ([]byte, error) {
 	defer lock.RUnlock()
 	return os.ReadFile(fs.filePath(key))
 }
+
+// Delete 删除 key 对应的文件
+func (fs *FileStore) Delete(key string) error {
+	lock := fs.getLock(key)
+	lock.Lock()
+	defer lock.Unlock()
+	path := fs.filePath(key)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return nil // 文件不存在也算删除成功
+	}
+	return os.Remove(path)
+}

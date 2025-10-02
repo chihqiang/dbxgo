@@ -34,9 +34,10 @@ type Config struct {
 }
 
 type IStore interface {
-	Has(key string) bool
 	Set(key string, value []byte) error
 	Get(key string) ([]byte, error)
+	Has(key string) bool
+	Delete(key string) error
 }
 
 func NewStore(cfg Config) (IStore, error) {
