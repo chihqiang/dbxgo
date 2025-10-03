@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/chihqiang/dbxgo/pkg/x"
 	"github.com/chihqiang/dbxgo/types"
 	"github.com/rabbitmq/amqp091-go"
 	"time"
@@ -11,24 +12,14 @@ import (
 
 // RabbitMQConfig RabbitMQ 配置实体
 type RabbitMQConfig struct {
-	URL       string `yaml:"url" json:"url" mapstructure:"url" env:"OUTPUT_RABBITMQ_URL" envDefault:"amqp://guest:guest@127.0.0.1:5672/"`
-	Queue     string `yaml:"queue" json:"queue" mapstructure:"queue" env:"OUTPUT_RABBITMQ_QUEUE" envDefault:"dbxgo-events"`
-	Durable   bool   `yaml:"durable" json:"durable" mapstructure:"durable" env:"OUTPUT_RABBITMQ_DURABLE" envDefault:"true"`
-	AutoAck   bool   `yaml:"auto_ack" json:"auto_ack" mapstructure:"auto_ack" env:"OUTPUT_RABBITMQ_AUTOACK" envDefault:"false"`
-	Exclusive bool   `yaml:"exclusive" json:"exclusive" mapstructure:"exclusive" env:"OUTPUT_RABBITMQ_EXCLUSIVE" envDefault:"false"`
-	NoWait    bool   `yaml:"no_wait" json:"no_wait" mapstructure:"no_wait" env:"OUTPUT_RABBITMQ_NOWAIT" envDefault:"false"`
-}
-
-// DefaultRabbitMQConfig 返回默认配置
-func DefaultRabbitMQConfig() RabbitMQConfig {
-	return RabbitMQConfig{
-		URL:       "amqp://guest:guest@127.0.0.1:5672/",
-		Queue:     "dbxgo",
-		Durable:   true,
-		AutoAck:   false,
-		Exclusive: false,
-		NoWait:    false,
-	}
+	URL        string `yaml:"url" json:"url" mapstructure:"url" env:"OUTPUT_RABBITMQ_URL" envDefault:"amqp://guest:guest@127.0.0.1:5672/"`
+	Exchange   string `yaml:"exchange" json:"exchange" mapstructure:"exchange" env:"OUTPUT_RABBITMQ_EXCHANGE" envDefault:"dbxgo-exchange"`
+	Queue      string `yaml:"queue" json:"queue" mapstructure:"queue" env:"OUTPUT_RABBITMQ_QUEUE" envDefault:"dbxgo-events"`
+	Durable    bool   `yaml:"durable" json:"durable" mapstructure:"durable" env:"OUTPUT_RABBITMQ_DURABLE" envDefault:"true"`
+	AutoDelete bool   `yaml:"auto_delete" json:"auto_delete" mapstructure:"auto_delete" env:"OUTPUT_RABBITMQ_AUTODELETE" envDefault:"false"`
+	AutoAck    bool   `yaml:"auto_ack" json:"auto_ack" mapstructure:"auto_ack" env:"OUTPUT_RABBITMQ_AUTOACK" envDefault:"false"`
+	Exclusive  bool   `yaml:"exclusive" json:"exclusive" mapstructure:"exclusive" env:"OUTPUT_RABBITMQ_EXCLUSIVE" envDefault:"false"`
+	NoWait     bool   `yaml:"no_wait" json:"no_wait" mapstructure:"no_wait" env:"OUTPUT_RABBITMQ_NOWAIT" envDefault:"false"`
 }
 
 // RabbitMQOutput RabbitMQ 输出实现
@@ -40,38 +31,29 @@ type RabbitMQOutput struct {
 
 // NewRabbitMQOutput 创建 RabbitMQOutput，并测试连接
 func NewRabbitMQOutput(cfg RabbitMQConfig) (*RabbitMQOutput, error) {
-	// 获取默认配置
-	def := DefaultRabbitMQConfig()
-
-	// 对每个字段进行判断，如果未设置则使用默认值
-	if cfg.URL == "" {
-		cfg.URL = def.URL
+	var (
+		err error
+	)
+	cfg, err = x.MergeWithDefaults[RabbitMQConfig](cfg)
+	if err != nil {
+		return nil, err
 	}
-	if cfg.Queue == "" {
-		cfg.Queue = def.Queue
-	}
-	// 布尔值需要区分零值，通常 false 是合理默认
-	// 这里 Durable、AutoAck、Exclusive、NoWait 可以直接使用 cfg 的值
-	// 如果想强制默认值覆盖零值，可以加条件：if !cfg.Durable { cfg.Durable = def.Durable } 等
-
 	// 建立 RabbitMQ 连接
 	conn, err := amqp091.Dial(cfg.URL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to RabbitMQ: %w", err)
 	}
-
 	// 打开 Channel
 	ch, err := conn.Channel()
 	if err != nil {
 		_ = conn.Close()
 		return nil, fmt.Errorf("failed to open channel: %w", err)
 	}
-
 	// 声明队列
 	_, err = ch.QueueDeclare(
 		cfg.Queue,
 		cfg.Durable,
-		false, // autoDelete
+		cfg.AutoDelete,
 		cfg.Exclusive,
 		cfg.NoWait,
 		nil,
@@ -81,7 +63,6 @@ func NewRabbitMQOutput(cfg RabbitMQConfig) (*RabbitMQOutput, error) {
 		_ = conn.Close()
 		return nil, fmt.Errorf("failed to declare queue: %w", err)
 	}
-
 	return &RabbitMQOutput{
 		config: cfg,
 		conn:   conn,
@@ -96,10 +77,10 @@ func (r *RabbitMQOutput) Send(ctx context.Context, event types.EventData) error 
 		return fmt.Errorf("failed to marshal event: %w", err)
 	}
 	return r.ch.Publish(
-		"",             // exchange
-		r.config.Queue, // routing key
-		false,          // mandatory
-		false,          // immediate
+		r.config.Exchange,
+		r.config.Queue,
+		false,
+		false,
 		amqp091.Publishing{
 			ContentType: "application/json",
 			Body:        body,

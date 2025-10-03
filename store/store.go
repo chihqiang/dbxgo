@@ -2,7 +2,6 @@ package store
 
 import (
 	"fmt"
-	"github.com/chihqiang/dbxgo/pkg/redisx"
 )
 
 type StoreType string
@@ -28,9 +27,9 @@ var (
 // Config 存储配置结构
 type Config struct {
 	// Type 存储类型，例如 "file"
-	Type  StoreType     `yaml:"type" json:"type" mapstructure:"type" env:"STORE_TYPE,required"`
-	File  FileConfig    `yaml:"file" json:"file" mapstructure:"file"`
-	Redis redisx.Config `yaml:"redis" json:"redis" mapstructure:"redis"`
+	Type  StoreType   `yaml:"type" json:"type" mapstructure:"type" env:"STORE_TYPE,required"`
+	File  FileConfig  `yaml:"file" json:"file" mapstructure:"file"`
+	Redis RedisConfig `yaml:"redis" json:"redis" mapstructure:"redis"`
 }
 
 type IStore interface {

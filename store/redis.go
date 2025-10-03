@@ -4,8 +4,15 @@ import (
 	"context"
 	"fmt"
 	"github.com/chihqiang/dbxgo/pkg/redisx"
+	"github.com/chihqiang/dbxgo/pkg/x"
 	"github.com/redis/go-redis/v9"
 )
+
+type RedisConfig struct {
+	Addr     string `yaml:"addr" json:"addr" mapstructure:"addr" env:"STORE_REDIS_ADDR" envDefault:"127.0.0.1:6379"`
+	Password string `yaml:"password" json:"password" mapstructure:"password" env:"STORE_REDIS_PASSWORD" envDefault:""`
+	DB       int    `yaml:"db" json:"db" mapstructure:"db" env:"STORE_REDIS_DB" envDefault:"0"`
+}
 
 // RedisStore Redis
 type RedisStore struct {
@@ -14,8 +21,17 @@ type RedisStore struct {
 }
 
 // NewRedisStore 创建 RedisStore
-func NewRedisStore(cfg redisx.Config) (*RedisStore, error) {
-	rdb, err := redisx.Open(cfg)
+func NewRedisStore(cfg RedisConfig) (*RedisStore, error) {
+	var err error
+	cfg, err = x.MergeWithDefaults[RedisConfig](cfg)
+	if err != nil {
+		return nil, err
+	}
+	rdb, err := redisx.Open(redisx.Config{
+		Addr:     cfg.Addr,
+		Password: cfg.Password,
+		DB:       cfg.DB,
+	})
 	if err != nil {
 		return nil, err
 	}

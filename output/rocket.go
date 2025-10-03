@@ -7,13 +7,14 @@ import (
 	"github.com/apache/rocketmq-client-go/v2"
 	"github.com/apache/rocketmq-client-go/v2/primitive"
 	"github.com/apache/rocketmq-client-go/v2/producer"
+	"github.com/chihqiang/dbxgo/pkg/x"
 	"github.com/chihqiang/dbxgo/types"
 )
 
 // RocketMQConfig RocketMQ 配置实体
 type RocketMQConfig struct {
 	// Servers 地址列表，例如 ["127.0.0.1:9876"]
-	Servers []string `yaml:"servers" json:"servers" mapstructure:"servers" env:"OUTPUT_ROCKETMQ_SERVERS"`
+	Servers []string `yaml:"servers" json:"servers" mapstructure:"servers" env:"OUTPUT_ROCKETMQ_SERVERS" envDefault:"127.0.0.1:9876"`
 
 	// Topic 消息发送到的 topic 名称
 	Topic string `yaml:"topic" json:"topic" mapstructure:"topic" env:"OUTPUT_ROCKETMQ_TOPIC" envDefault:"dbxgo-events"`
@@ -25,16 +26,6 @@ type RocketMQConfig struct {
 	Retry int `yaml:"retry" json:"retry" mapstructure:"retry" env:"OUTPUT_ROCKETMQ_RETRY" envDefault:"3"`
 }
 
-// DefaultRocketMQConfig 返回默认 RocketMQ 配置
-func DefaultRocketMQConfig() RocketMQConfig {
-	return RocketMQConfig{
-		Servers: []string{"127.0.0.1:9876"},
-		Topic:   "dbxgo_events",
-		Group:   "dbxgo_group",
-		Retry:   3,
-	}
-}
-
 // RocketMQOutput RocketMQ 实现，满足 IOutput 接口
 type RocketMQOutput struct {
 	cfg      RocketMQConfig
@@ -43,18 +34,13 @@ type RocketMQOutput struct {
 
 // NewRocketMQOutput 创建 RocketMQOutput 并填充默认值
 func NewRocketMQOutput(cfg RocketMQConfig) (*RocketMQOutput, error) {
-	// 填充默认值
-	def := DefaultRocketMQConfig()
-	if len(cfg.Servers) == 0 {
-		cfg.Servers = def.Servers
+	var (
+		err error
+	)
+	cfg, err = x.MergeWithDefaults[RocketMQConfig](cfg)
+	if err != nil {
+		return nil, err
 	}
-	if cfg.Topic == "" {
-		cfg.Topic = def.Topic
-	}
-	if cfg.Group == "" {
-		cfg.Group = def.Group
-	}
-
 	// 创建生产者配置
 	options := []producer.Option{
 		producer.WithNameServer(cfg.Servers),

@@ -10,6 +10,10 @@ import (
 	"os"
 )
 
+func init() {
+	_ = godotenv.Load()
+}
+
 // Config 定义全局配置结构
 // 用于从配置文件加载应用程序的所有配置项
 type Config struct {
@@ -31,7 +35,6 @@ func LoadEnv() (*Config, error) {
 // path: 配置文件路径
 // 返回值: 配置对象指针和可能的错误
 func Load(path string) (*Config, error) {
-	_ = godotenv.Load()
 	// 尝试从环境变量中加载配置（优先级最高）
 	conf, err := LoadEnv()
 	if err == nil && conf != nil {
