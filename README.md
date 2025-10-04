@@ -21,10 +21,11 @@ dbxgo is an efficient Go-based Change Data Capture (CDC) tool that real-time mon
 
 ### Outputs
 - Standard Output (stdout)
-- Redis
-- Kafka
-- RabbitMQ
-- RocketMQ
+- [Redis](https://redis.io/)
+- [Kafka](https://kafka.apache.org/)
+- [RabbitMQ](https://www.rabbitmq.com/)
+- [RocketMQ](https://rocketmq.apache.org/)
+- [Pulsar](https://pulsar.apache.org/)
 
 ### Storage
 - File Storage
@@ -137,6 +138,13 @@ output:
       namespace: "test"      # Namespace
       access_key: "RocketMQ" # Access key
       secret_key: "12345678" # Secret key
+   # pulsar settings
+   pulsar:
+      url: "pulsar://127.0.0.1:6650"   # Pulsar broker URL
+      topic: "dbxgo_events"            # Pulsar topic name
+      token: "YOUR_AUTH_TOKEN"         # Optional authentication token
+      operation_timeout: 30            # Operation timeout in seconds
+      connection_timeout: 30           # Connection timeout in seconds
 ```
 
 ## Notes

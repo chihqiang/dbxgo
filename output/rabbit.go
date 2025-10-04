@@ -76,7 +76,7 @@ func (r *RabbitMQOutput) Send(ctx context.Context, event types.EventData) error 
 	if err != nil {
 		return fmt.Errorf("failed to marshal event: %w", err)
 	}
-	return r.ch.Publish(
+	return r.ch.PublishWithContext(ctx,
 		r.config.Exchange,
 		r.config.Queue,
 		false,

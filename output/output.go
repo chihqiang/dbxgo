@@ -14,12 +14,14 @@ var (
 	OutputTypeKafka    OutputType = "kafka"
 	OutputTypeRabbitMQ OutputType = "rabbitmq"
 	OutputTypeRocketMQ OutputType = "rocketmq"
+	OutputTypePulsar   OutputType = "pulsar"
 	outputs                       = map[OutputType]func(Config) (IOutput, error){
 		OutputTypeStdout:   func(cfg Config) (IOutput, error) { return NewStdoutOutput() },
 		OutputTypeRedis:    func(cfg Config) (IOutput, error) { return NewRedisOutput(cfg.Redis) },
 		OutputTypeKafka:    func(cfg Config) (IOutput, error) { return NewKafkaOutput(cfg.Kafka) },
 		OutputTypeRabbitMQ: func(cfg Config) (IOutput, error) { return NewRabbitMQOutput(cfg.RabbitMQ) },
 		OutputTypeRocketMQ: func(cfg Config) (IOutput, error) { return NewRocketMQOutput(cfg.RocketMQ) },
+		OutputTypePulsar:   func(cfg Config) (IOutput, error) { return NewPulsarOutput(cfg.Pulsar) },
 	}
 )
 
@@ -33,6 +35,7 @@ type Config struct {
 	Kafka    KafkaConfig    `yaml:"kafka" json:"kafka" mapstructure:"kafka"`
 	RabbitMQ RabbitMQConfig `yaml:"rabbitmq" json:"rabbitmq" mapstructure:"rabbitmq"`
 	RocketMQ RocketMQConfig `yaml:"rocketmq" json:"rocketmq" mapstructure:"rocketmq"`
+	Pulsar   PulsarConfig   `yaml:"pulsar" json:"pulsar" mapstructure:"pulsar"`
 }
 
 // IOutput 定义事件输出接口
@@ -63,7 +66,7 @@ func SendWithRetry(ctx context.Context, output IOutput, event types.EventData, m
 		} else {
 			lastErr = err
 			if i < maxRetries {
-				time.Sleep(time.Duration(i+1) * 100 * time.Millisecond) // 指数退避
+				time.Sleep(time.Duration(i+1) * 100 * time.Millisecond)
 			}
 		}
 	}
