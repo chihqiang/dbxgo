@@ -13,16 +13,25 @@ import (
 
 // RocketMQConfig RocketMQ 配置实体
 type RocketMQConfig struct {
-	// Servers 地址列表，例如 ["127.0.0.1:9876"]
+	// Servers - RocketMQ NameServer 地址列表，例如 ["127.0.0.1:9876"]
 	Servers []string `yaml:"servers" json:"servers" mapstructure:"servers" env:"OUTPUT_ROCKETMQ_SERVERS" envDefault:"127.0.0.1:9876"`
 
-	// Topic 消息发送到的 topic 名称
+	// Topic - 消息发送的 Topic 名称
 	Topic string `yaml:"topic" json:"topic" mapstructure:"topic" env:"OUTPUT_ROCKETMQ_TOPIC" envDefault:"dbxgo-events"`
 
-	// Group 消息生产者分组名称
-	Group string `yaml:"group" json:"group" mapstructure:"group" env:"OUTPUT_ROCKETMQ_GROUP" envDefault:"dbxgo-group"`
+	// Group - 生产者分组名称
+	Group string `yaml:"group" json:"group" mapstructure:"group" env:"OUTPUT_ROCKETMQ_GROUP"`
 
-	// Retry 发送失败重试次数
+	// Namespace - 命名空间
+	Namespace string `yaml:"namespace" json:"namespace" mapstructure:"namespace" env:"OUTPUT_ROCKETMQ_NAMESPACE"`
+
+	// AccessKey - 访问密钥 AccessKey
+	AccessKey string `yaml:"access_key" json:"access_key" mapstructure:"access_key" env:"OUTPUT_ROCKETMQ_ACCESS_KEY"`
+
+	// SecretKey - 访问密钥 SecretKey
+	SecretKey string `yaml:"secret_key" json:"secret_key" mapstructure:"secret_key" env:"OUTPUT_ROCKETMQ_SECRET_KEY"`
+
+	// Retry - 消息发送失败时的重试次数
 	Retry int `yaml:"retry" json:"retry" mapstructure:"retry" env:"OUTPUT_ROCKETMQ_RETRY" envDefault:"3"`
 }
 
@@ -43,11 +52,21 @@ func NewRocketMQOutput(cfg RocketMQConfig) (*RocketMQOutput, error) {
 	}
 	// 创建生产者配置
 	options := []producer.Option{
-		producer.WithNameServer(cfg.Servers),
-		producer.WithGroupName(cfg.Group),
+		producer.WithNsResolver(primitive.NewPassthroughResolver(cfg.Servers)),
 		producer.WithRetry(cfg.Retry),
 	}
-
+	if cfg.Group != "" {
+		options = append(options, producer.WithGroupName(cfg.Group))
+	}
+	if cfg.Namespace != "" {
+		options = append(options, producer.WithNamespace(cfg.Namespace))
+	}
+	if cfg.AccessKey != "" && cfg.SecretKey != "" {
+		options = append(options, producer.WithCredentials(primitive.Credentials{
+			AccessKey: cfg.AccessKey,
+			SecretKey: cfg.SecretKey,
+		}))
+	}
 	// 创建生产者
 	p, err := rocketmq.NewProducer(options...)
 	if err != nil {

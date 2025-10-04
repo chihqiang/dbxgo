@@ -81,7 +81,7 @@ The configuration file uses YAML format and consists of three main parts: `store
 store:
    type: file                # Storage type: file / redis
    file:
-      dir: "runtime/"        # Directory for storing offset files
+      dir: "runtime"        # Directory for storing offset files
    redis:
       addr: "127.0.0.1:6379" # Redis address
       password: "123456"     # Redis password (leave empty if none)
@@ -131,10 +131,12 @@ output:
    # RocketMQ settings
    rocketmq:
       servers:
-         - "127.0.0.1:9876"  # RocketMQ name server address
+         - "127.0.0.1:9876"   # RocketMQ NameServer address
       topic: "dbxgo_events"  # RocketMQ topic name
-      group: "dbxgo_group" # Producer group name
-      retry: 2               # Number of retry attempts on failure
+      group: "dbxgo_group"   # Producer group name
+      namespace: "test"      # Namespace
+      access_key: "RocketMQ" # Access key
+      secret_key: "12345678" # Secret key
 ```
 
 ## Notes

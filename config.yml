@@ -52,7 +52,9 @@ output:
   # RocketMQ settings
   rocketmq:
     servers:
-      - "127.0.0.1:9876"  # RocketMQ name server address
+      - "127.0.0.1:9876"   # RocketMQ NameServer address
     topic: "dbxgo_events"  # RocketMQ topic name
-    group: "dbxgo_group" # Producer group name
-    retry: 2               # Number of retry attempts on failure
+    group: "dbxgo_group"   # Producer group name
+    namespace: "test"      # Namespace
+    access_key: "RocketMQ" # Access key
+    secret_key: "12345678" # Secret key
