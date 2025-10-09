@@ -80,71 +80,71 @@ The configuration file uses YAML format and consists of three main parts: `store
 ```yaml
 # ---------- Offset Storage Configuration ----------
 store:
-   type: file                # Storage type: file / redis
-   file:
-      dir: "runtime"        # Directory for storing offset files
-   redis:
-      addr: "127.0.0.1:6379" # Redis address
-      password: "123456"     # Redis password (leave empty if none)
-      db: 0                  # Redis database number (default 0)
+  type: file                # Storage type: file / redis
+  file:
+    dir: "runtime"        # Directory for storing offset files
+  redis:
+    addr: "127.0.0.1:6379" # Redis address
+    password: "123456"     # Redis password (leave empty if none)
+    db: 0                  # Redis database number (default 0)
 
 # ---------- Data Source Configuration ----------
 source:
-   type: "mysql"             # Data source type: mysql
-   mysql:
-      addr: "127.0.0.1:3306" # Database address (host:port)
-      user: "root"           # Database username (recommended to use a dedicated account in production)
-      password: "123456"     # Database password
-      exclude_table_regex:   # Tables to exclude (regex patterns)
-         - "mysql.*"
-         - "information_schema.*"
-         - "performance_schema.*"
-         - "sys.*"
-      include_table_regex:   # Tables to include (regex patterns, empty = all except excluded)
-      # - "test_db.users"    # Example: only listen to "users" table in "test_db"
+  type: "mysql"             # Data source type: mysql
+  mysql:
+    addr: "127.0.0.1:3306" # Database address (host:port)
+    user: "root"           # Database username (recommended to use a dedicated account in production)
+    password: "123456"     # Database password
+    exclude_table_regex:   # Tables to exclude (regex patterns)
+      - "mysql.*"
+      - "information_schema.*"
+      - "performance_schema.*"
+      - "sys.*"
+    include_table_regex:   # Tables to include (regex patterns, empty = all except excluded)
+    # - "test_db.users"    # Example: only listen to "users" table in "test_db"
 
 # ---------- Output Configuration ----------
 output:
-   type: stdout              # Output type: stdout / kafka / redis / rabbitmq / rocketmq
+  type: stdout              # Output type: stdout / kafka / redis / rabbitmq / rocketmq
 
-   # Kafka settings
-   kafka:
-      brokers:
-         - "127.0.0.1:9092"  # Kafka broker list
-      topic: "dbxgo_events"  # Kafka topic name
+  # Kafka settings
+  kafka:
+    brokers:
+      - "127.0.0.1:9092"  # Kafka broker list
+    topic: "dbxgo-events"  # Kafka topic name
 
-   # RabbitMQ settings
-   rabbitmq:
-      url: "amqp://guest:guest@127.0.0.1:5672/" # RabbitMQ connection URL
-      queue: "dbxgo_queue"   # Queue name
-      durable: true          # Whether the queue should survive server restarts
-      auto_ack: false        # Whether to auto-acknowledge messages
-      exclusive: false       # Whether the queue is exclusive to this connection
-      no_wait: false         # Whether to wait for the server to confirm queue declaration
+  # RabbitMQ settings
+  rabbitmq:
+    url: "amqp://guest:guest@127.0.0.1:5672/" # RabbitMQ connection URL
+    queue: "dbxgo_queue"   # Queue name
+    durable: true          # Whether the queue should survive server restarts
+    auto_ack: false        # Whether to auto-acknowledge messages
+    exclusive: false       # Whether the queue is exclusive to this connection
+    no_wait: false         # Whether to wait for the server to confirm queue declaration
 
-   # Redis settings
-   redis:
-      addr: "127.0.0.1:6379" # Redis address
-      password: "123456"     # Redis password
-      db: 0                  # Redis database number
-      key: "dbxgo_events"    # Redis key for storing events
+  # Redis settings
+  redis:
+    addr: "127.0.0.1:6379" # Redis address
+    password: "123456"     # Redis password
+    db: 0                  # Redis database number
+    key: "dbxgo-events"    # Redis key for storing events
 
-   # RocketMQ settings
-   rocketmq:
-      servers:
-         - "127.0.0.1:9876"   # RocketMQ NameServer address
-      topic: "dbxgo_events"  # RocketMQ topic name
-      group: "dbxgo_group"   # Producer group name
-      namespace: "test"      # Namespace
-      access_key: "RocketMQ" # Access key
-      secret_key: "12345678" # Secret key
-   # pulsar settings
-   pulsar:
-      url: "pulsar://127.0.0.1:6650"   # Pulsar broker URL
-      topic: "dbxgo_events"            # Pulsar topic name
-      token: "YOUR_AUTH_TOKEN"         # Optional authentication token
-      operation_timeout: 30            # Operation timeout in seconds
-      connection_timeout: 30           # Connection timeout in seconds
+  # RocketMQ settings
+  rocketmq:
+    servers:
+      - "127.0.0.1:9876"   # RocketMQ NameServer address
+    topic: "dbxgo-events"  # RocketMQ topic name
+    group: "dbxgo_group"   # Producer group name
+    namespace: "test"      # Namespace
+    access_key: "RocketMQ" # Access key
+    secret_key: "12345678" # Secret key
+  # pulsar settings
+  pulsar:
+    url: "pulsar://127.0.0.1:6650"   # Pulsar broker URL
+    topic: "dbxgo-events"            # Pulsar topic name
+    token: "YOUR_AUTH_TOKEN"         # Optional authentication token
+    operation_timeout: 30            # Operation timeout in seconds
+    connection_timeout: 30           # Connection timeout in seconds
 ```
 
 ## Docker Deployment

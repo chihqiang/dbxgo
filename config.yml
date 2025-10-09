@@ -31,7 +31,7 @@ output:
   kafka:
     brokers:
       - "127.0.0.1:9092"  # Kafka broker list
-    topic: "dbxgo_events"  # Kafka topic name
+    topic: "dbxgo-events"  # Kafka topic name
 
   # RabbitMQ settings
   rabbitmq:
@@ -47,13 +47,13 @@ output:
     addr: "127.0.0.1:6379" # Redis address
     password: "123456"     # Redis password
     db: 0                  # Redis database number
-    key: "dbxgo_events"    # Redis key for storing events
+    key: "dbxgo-events"    # Redis key for storing events
 
   # RocketMQ settings
   rocketmq:
     servers:
       - "127.0.0.1:9876"   # RocketMQ NameServer address
-    topic: "dbxgo_events"  # RocketMQ topic name
+    topic: "dbxgo-events"  # RocketMQ topic name
     group: "dbxgo_group"   # Producer group name
     namespace: "test"      # Namespace
     access_key: "RocketMQ" # Access key
@@ -61,7 +61,7 @@ output:
   # pulsar settings
   pulsar:
     url: "pulsar://127.0.0.1:6650"   # Pulsar broker URL
-    topic: "dbxgo_events"            # Pulsar topic name
+    topic: "dbxgo-events"            # Pulsar topic name
     token: "YOUR_AUTH_TOKEN"         # Optional authentication token
     operation_timeout: 30            # Operation timeout in seconds
     connection_timeout: 30           # Connection timeout in seconds
