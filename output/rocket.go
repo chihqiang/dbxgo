@@ -7,7 +7,7 @@ import (
 	"github.com/apache/rocketmq-client-go/v2"
 	"github.com/apache/rocketmq-client-go/v2/primitive"
 	"github.com/apache/rocketmq-client-go/v2/producer"
-	"github.com/chihqiang/dbxgo/pkg/x"
+	"github.com/chihqiang/dbxgo/pkg/structsx"
 	"github.com/chihqiang/dbxgo/types"
 )
 
@@ -46,7 +46,7 @@ func NewRocketMQOutput(cfg RocketMQConfig) (*RocketMQOutput, error) {
 	var (
 		err error
 	)
-	cfg, err = x.MergeWithDefaults[RocketMQConfig](cfg)
+	cfg, err = structsx.MergeWithDefaults[RocketMQConfig](cfg)
 	if err != nil {
 		return nil, err
 	}

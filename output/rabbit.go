@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/chihqiang/dbxgo/pkg/x"
+	"github.com/chihqiang/dbxgo/pkg/structsx"
 	"github.com/chihqiang/dbxgo/types"
 	"github.com/rabbitmq/amqp091-go"
 	"time"
@@ -34,7 +34,7 @@ func NewRabbitMQOutput(cfg RabbitMQConfig) (*RabbitMQOutput, error) {
 	var (
 		err error
 	)
-	cfg, err = x.MergeWithDefaults[RabbitMQConfig](cfg)
+	cfg, err = structsx.MergeWithDefaults[RabbitMQConfig](cfg)
 	if err != nil {
 		return nil, err
 	}

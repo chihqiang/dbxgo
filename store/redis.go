@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/chihqiang/dbxgo/pkg/redisx"
-	"github.com/chihqiang/dbxgo/pkg/x"
+	"github.com/chihqiang/dbxgo/pkg/structsx"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -23,7 +23,7 @@ type RedisStore struct {
 // NewRedisStore 创建 RedisStore
 func NewRedisStore(cfg RedisConfig) (*RedisStore, error) {
 	var err error
-	cfg, err = x.MergeWithDefaults[RedisConfig](cfg)
+	cfg, err = structsx.MergeWithDefaults[RedisConfig](cfg)
 	if err != nil {
 		return nil, err
 	}

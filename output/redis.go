@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/chihqiang/dbxgo/pkg/redisx"
-	"github.com/chihqiang/dbxgo/pkg/x"
+	"github.com/chihqiang/dbxgo/pkg/structsx"
 	"github.com/chihqiang/dbxgo/types"
 	"github.com/redis/go-redis/v9"
 )
@@ -27,7 +27,7 @@ type RedisOutput struct {
 // NewRedisOutput 创建 RedisOutput，并填充默认值
 func NewRedisOutput(cfg RedisConfig) (*RedisOutput, error) {
 	var err error
-	cfg, err = x.MergeWithDefaults[RedisConfig](cfg)
+	cfg, err = structsx.MergeWithDefaults[RedisConfig](cfg)
 	if err != nil {
 		return nil, err
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/chihqiang/dbxgo/pkg/cmdx"
 	"github.com/chihqiang/dbxgo/store"
 	"github.com/chihqiang/dbxgo/types"
 	"github.com/go-mysql-org/go-mysql/canal"
@@ -77,12 +78,14 @@ func NewMySQLSource(cfg MysqlConfig) (ISource, error) {
 		cfg.ExcludeTableRegex = DefaultMysqlExcludeTableRegex
 	}
 	cc := canal.NewDefaultConfig()
+
 	// 设置数据库连接信息
 	cc.Addr = cfg.Addr
 	cc.User = cfg.User
 	cc.Password = cfg.Password
-	// 不需要mysqldump执行路径，使用纯Go实现
-	cc.Dump.ExecutionPath = ""
+	if !cmdx.CommandExists("mysqldump") {
+		cc.Dump.ExecutionPath = ""
+	}
 	cc.ExcludeTableRegex = cfg.ExcludeTableRegex
 	if len(cfg.IncludeTableRegex) > 0 {
 		cc.IncludeTableRegex = cfg.IncludeTableRegex

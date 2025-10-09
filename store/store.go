@@ -24,6 +24,10 @@ var (
 	}
 )
 
+func Register(storeType StoreType, fn func(Config) (IStore, error)) {
+	stores[storeType] = fn
+}
+
 // Config 存储配置结构
 type Config struct {
 	// Type 存储类型，例如 "file"

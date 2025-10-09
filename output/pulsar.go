@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/apache/pulsar-client-go/pulsar"
-	"github.com/chihqiang/dbxgo/pkg/x"
+	"github.com/chihqiang/dbxgo/pkg/structsx"
 	"github.com/chihqiang/dbxgo/types"
 	"time"
 )
@@ -26,7 +26,7 @@ type PulsarOutput struct {
 // NewPulsarOutput initializes the Pulsar client and producer
 func NewPulsarOutput(cfg PulsarConfig) (*PulsarOutput, error) {
 	var err error
-	cfg, err = x.MergeWithDefaults[PulsarConfig](cfg)
+	cfg, err = structsx.MergeWithDefaults[PulsarConfig](cfg)
 	if err != nil {
 		return nil, err
 	}
