@@ -3,7 +3,7 @@
 FROM golang:1.23-alpine AS builder
 
 # Set build-time argument for version
-ARG VERSION=main
+ARG DBXGO_VERSION=main
 
 # Install dependencies for building Go project
 RUN apk add --no-cache git make gcc musl-dev
@@ -15,7 +15,7 @@ WORKDIR /app
 COPY . .
 
 # Build the Go binary with the specified version
-RUN make build VERSION=${VERSION}
+RUN make build VERSION=${DBXGO_VERSION}
 
 # ---------- Runtime stage ----------
 # Use minimal Debian image for runtime
