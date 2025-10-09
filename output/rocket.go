@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"github.com/apache/rocketmq-client-go/v2"
 	"github.com/apache/rocketmq-client-go/v2/primitive"
 	"github.com/apache/rocketmq-client-go/v2/producer"
@@ -15,24 +16,18 @@ import (
 type RocketMQConfig struct {
 	// Servers - RocketMQ NameServer 地址列表，例如 ["127.0.0.1:9876"]
 	Servers []string `yaml:"servers" json:"servers" mapstructure:"servers" env:"OUTPUT_ROCKETMQ_SERVERS" envDefault:"127.0.0.1:9876"`
-
 	// Topic - 消息发送的 Topic 名称
 	Topic string `yaml:"topic" json:"topic" mapstructure:"topic" env:"OUTPUT_ROCKETMQ_TOPIC" envDefault:"dbxgo-events"`
-
 	// Group - 生产者分组名称
 	Group string `yaml:"group" json:"group" mapstructure:"group" env:"OUTPUT_ROCKETMQ_GROUP"`
-
-	// Namespace - 命名空间
-	Namespace string `yaml:"namespace" json:"namespace" mapstructure:"namespace" env:"OUTPUT_ROCKETMQ_NAMESPACE"`
-
-	// AccessKey - 访问密钥 AccessKey
-	AccessKey string `yaml:"access_key" json:"access_key" mapstructure:"access_key" env:"OUTPUT_ROCKETMQ_ACCESS_KEY"`
-
-	// SecretKey - 访问密钥 SecretKey
-	SecretKey string `yaml:"secret_key" json:"secret_key" mapstructure:"secret_key" env:"OUTPUT_ROCKETMQ_SECRET_KEY"`
-
 	// Retry - 消息发送失败时的重试次数
 	Retry int `yaml:"retry" json:"retry" mapstructure:"retry" env:"OUTPUT_ROCKETMQ_RETRY" envDefault:"3"`
+	// Namespace - 命名空间
+	Namespace string `yaml:"namespace" json:"namespace" mapstructure:"namespace" env:"OUTPUT_ROCKETMQ_NAMESPACE"`
+	// AccessKey - 访问密钥 AccessKey
+	AccessKey string `yaml:"access_key" json:"access_key" mapstructure:"access_key" env:"OUTPUT_ROCKETMQ_ACCESS_KEY"`
+	// SecretKey - 访问密钥 SecretKey
+	SecretKey string `yaml:"secret_key" json:"secret_key" mapstructure:"secret_key" env:"OUTPUT_ROCKETMQ_SECRET_KEY"`
 }
 
 // RocketMQOutput RocketMQ 实现，满足 IOutput 接口

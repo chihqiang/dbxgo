@@ -78,73 +78,84 @@ The configuration file uses YAML format and consists of three main parts: `store
 ### Example Configuration
 
 ```yaml
+# ==========================================
+# dbxgo Configuration File Example (YAML)
+# ==========================================
+
 # ---------- Offset Storage Configuration ----------
 store:
-  type: file                # Storage type: file / redis
+  type: "file"                # Storage type: file / redis
+
   file:
-    dir: "runtime"        # Directory for storing offset files
+    dir: "runtime"            # Directory for storing offset files
+
   redis:
-    addr: "127.0.0.1:6379" # Redis address
-    password: "123456"     # Redis password (leave empty if none)
-    db: 0                  # Redis database number (default 0)
+    addr: "127.0.0.1:6379"   # Redis address
+    password: ""              # Redis password (leave empty if none)
+    db: 0                     # Redis database number (default 0)
 
 # ---------- Data Source Configuration ----------
 source:
-  type: "mysql"             # Data source type: mysql
+  type: "mysql"               # Data source type: mysql
+
   mysql:
-    addr: "127.0.0.1:3306" # Database address (host:port)
-    user: "root"           # Database username (recommended to use a dedicated account in production)
-    password: "123456"     # Database password
-    exclude_table_regex:   # Tables to exclude (regex patterns)
+    addr: "127.0.0.1:3306"   # Database address (host:port)
+    user: "root"              # Database username (recommended to use a dedicated account in production)
+    password: ""              # Database password
+    exclude_table_regex:      # Tables to exclude (regex patterns)
       - "mysql.*"
       - "information_schema.*"
       - "performance_schema.*"
       - "sys.*"
-    include_table_regex:   # Tables to include (regex patterns, empty = all except excluded)
-    # - "test_db.users"    # Example: only listen to "users" table in "test_db"
+    include_table_regex:      # Tables to include (regex patterns, empty = all except excluded)
+      - "dbxgo.*"             # Example: only listen to dbxgo tables
 
 # ---------- Output Configuration ----------
 output:
-  type: stdout              # Output type: stdout / kafka / redis / rabbitmq / rocketmq
+  type: "stdout"              # Output type: stdout / kafka / redis / rabbitmq / rocketmq / pulsar
 
   # Kafka settings
   kafka:
     brokers:
-      - "127.0.0.1:9092"  # Kafka broker list
-    topic: "dbxgo-events"  # Kafka topic name
+      - "127.0.0.1:9092"      # Kafka broker list
+    topic: "dbxgo-events"     # Kafka topic name
 
   # RabbitMQ settings
   rabbitmq:
     url: "amqp://guest:guest@127.0.0.1:5672/" # RabbitMQ connection URL
-    queue: "dbxgo_queue"   # Queue name
-    durable: true          # Whether the queue should survive server restarts
-    auto_ack: false        # Whether to auto-acknowledge messages
-    exclusive: false       # Whether the queue is exclusive to this connection
-    no_wait: false         # Whether to wait for the server to confirm queue declaration
+    exchange: "dbxgo-exchange" # Exchange name
+    queue: "dbxgo-events"      # Queue name
+    durable: true              # Whether the queue should survive server restarts
+    auto_delete: false         # Whether the queue should auto-delete when unused
+    auto_ack: false            # Whether to auto-acknowledge messages
+    exclusive: false           # Whether the queue is exclusive to this connection
+    no_wait: false             # Whether to wait for the server to confirm queue declaration
 
   # Redis settings
   redis:
-    addr: "127.0.0.1:6379" # Redis address
-    password: "123456"     # Redis password
-    db: 0                  # Redis database number
-    key: "dbxgo-events"    # Redis key for storing events
+    addr: "127.0.0.1:6379"     # Redis address
+    password: ""               # Redis password
+    db: 0                      # Redis database number
+    key: "dbxgo-events"        # Redis key for storing events
 
   # RocketMQ settings
   rocketmq:
     servers:
-      - "127.0.0.1:9876"   # RocketMQ NameServer address
-    topic: "dbxgo-events"  # RocketMQ topic name
-    group: "dbxgo_group"   # Producer group name
-    namespace: "test"      # Namespace
-    access_key: "RocketMQ" # Access key
-    secret_key: "12345678" # Secret key
-  # pulsar settings
+      - "127.0.0.1:9876"       # RocketMQ NameServer address
+    topic: "dbxgo-events"      # RocketMQ topic name
+    group: "dbxgo-group"       # Producer group name
+    namespace: ""              # Namespace
+    access_key: ""             # Access key
+    secret_key: ""             # Secret key
+    retry: 3                   # Retry count on failure
+
+  # Pulsar settings
   pulsar:
-    url: "pulsar://127.0.0.1:6650"   # Pulsar broker URL
-    topic: "dbxgo-events"            # Pulsar topic name
-    token: "YOUR_AUTH_TOKEN"         # Optional authentication token
-    operation_timeout: 30            # Operation timeout in seconds
-    connection_timeout: 30           # Connection timeout in seconds
+    url: "pulsar://127.0.0.1:6650"  # Pulsar broker URL
+    topic: "dbxgo-events"           # Pulsar topic name
+    token: "YOUR_PULSAR_TOKEN"      # Optional authentication token
+    operation_timeout: 30           # Operation timeout in seconds
+    connection_timeout: 30          # Connection timeout in seconds
 ```
 
 ## Docker Deployment
@@ -169,34 +180,16 @@ docker run -it --rm \
     -e SOURCE_MYSQL_USER="root" \                  # Source MySQL username
     -e SOURCE_MYSQL_PASSWORD="123456" \            # Source MySQL password
     -e STORE_TYPE="redis" \                        # Internal metadata storage type (Redis)
-    -e STORE_REDIS_ADDR=your-redis-host:6379 \     # Internal Redis address
-    -e STORE_REDIS_PASSWORD=your-redis-password \  # Internal Redis password
+    -e STORE_REDIS_ADDR=127.0.0.1:6379 \     # Internal Redis address
+    -e STORE_REDIS_PASSWORD=123456 \  # Internal Redis password
     -e STORE_REDIS_DB=1 \                           # Internal Redis DB
     -e OUTPUT_TYPE="redis" \                        # Output type (target Redis)
-    -e OUTPUT_REDIS_ADDR=your-redis-host:6379 \    # Target Redis address
-    -e OUTPUT_REDIS_PASSWORD=your-redis-password \ # Target Redis password
+    -e OUTPUT_REDIS_ADDR=127.0.0.1:6379 \    # Target Redis address
+    -e OUTPUT_REDIS_PASSWORD=123456 \ # Target Redis password
     -e OUTPUT_REDIS_DB=1 \                          # Target Redis DB
     -e OUTPUT_REDIS_KEY=dbxgo-events \             # Target Redis key prefix
     zhiqiangwang/dbxgo:latest
-
-# =========================
-# 3️⃣ MySQL → Kafka (using Redis for metadata storage)
-# =========================
-docker run -it --rm \
-    -e SOURCE_MYSQL_ADDR="192.168.110.41:3306" \   # Source MySQL host
-    -e SOURCE_MYSQL_USER="root" \                  # Source MySQL username
-    -e SOURCE_MYSQL_PASSWORD="123456" \            # Source MySQL password
-    -e STORE_TYPE="redis" \                        # Metadata storage type (Redis)
-    -e STORE_REDIS_ADDR=your-redis-host:6379 \     # Internal Redis address
-    -e STORE_REDIS_PASSWORD=your-redis-password \  # Internal Redis password
-    -e STORE_REDIS_DB=1 \                           # Internal Redis DB
-    -e OUTPUT_TYPE="kafka" \                        # Output type (Kafka)
-    -e OUTPUT_KAFKA_BROKERS=127.0.0.1:9092 \      # Kafka broker list
-    -e OUTPUT_KAFKA_TOPIC=dbxgo-events \          # Kafka topic for events
-    zhiqiangwang/dbxgo:latest
 ```
-
-> You can refer to the environment variables at https://github.com/chihqiang/dbxgo/blob/main/.env.example.
 
 ## Notes
 

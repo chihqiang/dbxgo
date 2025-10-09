@@ -34,15 +34,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 
-# Default environment variables
+# ==========================
+# Store Configuration
+# ==========================
 ENV STORE_TYPE=file
 
+# ==========================
+# Source Configuration
+# ==========================
 ENV SOURCE_TYPE=mysql
 ENV SOURCE_MYSQL_ADDR=127.0.0.1:3306
 ENV SOURCE_MYSQL_USER=root
-ENV SOURCE_MYSQL_PASSWORD=123456
+ENV SOURCE_MYSQL_PASSWORD=""
+ENV SOURCE_MYSQL_INCLUDE_TABLE_REGEX=""
 ENV SOURCE_MYSQL_EXCLUDE_TABLE_REGEX="mysql.*,information_schema.*,performance_schema.*,sys.*"
 
+# ==========================
+# Output Configuration
+# ==========================
 ENV OUTPUT_TYPE=stdout
 
 
