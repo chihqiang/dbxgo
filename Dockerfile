@@ -62,4 +62,4 @@ USER dbxgo
 WORKDIR /app
 
 # Default command to run the binary
-CMD ["dbxgo"]
+CMD ["dbxgo","-c","/app/config.yaml"]
