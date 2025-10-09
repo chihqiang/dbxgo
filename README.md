@@ -147,6 +147,57 @@ output:
       connection_timeout: 30           # Connection timeout in seconds
 ```
 
+## Docker Deployment
+
+You can use Docker to run dbxgo in containerized environments. Here's how to build and run dbxgo with Docker:
+
+```bash
+# =========================
+# 1️⃣ MySQL only (read from MySQL)
+# =========================
+docker run -it --rm \
+    -e SOURCE_MYSQL_ADDR="192.168.110.41:3306" \   # MySQL host and port
+    -e SOURCE_MYSQL_USER="root" \                  # MySQL username
+    -e SOURCE_MYSQL_PASSWORD="123456" \            # MySQL password
+    zhiqiangwang/dbxgo:latest                      # Use latest dbxgo image
+
+# =========================
+# 2️⃣ MySQL → Redis & Redis
+# =========================
+docker run -it --rm \
+    -e SOURCE_MYSQL_ADDR="192.168.110.41:3306" \   # Source MySQL host
+    -e SOURCE_MYSQL_USER="root" \                  # Source MySQL username
+    -e SOURCE_MYSQL_PASSWORD="123456" \            # Source MySQL password
+    -e STORE_TYPE="redis" \                        # Internal metadata storage type (Redis)
+    -e STORE_REDIS_ADDR=your-redis-host:6379 \     # Internal Redis address
+    -e STORE_REDIS_PASSWORD=your-redis-password \  # Internal Redis password
+    -e STORE_REDIS_DB=1 \                           # Internal Redis DB
+    -e OUTPUT_TYPE="redis" \                        # Output type (target Redis)
+    -e OUTPUT_REDIS_ADDR=your-redis-host:6379 \    # Target Redis address
+    -e OUTPUT_REDIS_PASSWORD=your-redis-password \ # Target Redis password
+    -e OUTPUT_REDIS_DB=1 \                          # Target Redis DB
+    -e OUTPUT_REDIS_KEY=dbxgo-events \             # Target Redis key prefix
+    zhiqiangwang/dbxgo:latest
+
+# =========================
+# 3️⃣ MySQL → Kafka (using Redis for metadata storage)
+# =========================
+docker run -it --rm \
+    -e SOURCE_MYSQL_ADDR="192.168.110.41:3306" \   # Source MySQL host
+    -e SOURCE_MYSQL_USER="root" \                  # Source MySQL username
+    -e SOURCE_MYSQL_PASSWORD="123456" \            # Source MySQL password
+    -e STORE_TYPE="redis" \                        # Metadata storage type (Redis)
+    -e STORE_REDIS_ADDR=your-redis-host:6379 \     # Internal Redis address
+    -e STORE_REDIS_PASSWORD=your-redis-password \  # Internal Redis password
+    -e STORE_REDIS_DB=1 \                           # Internal Redis DB
+    -e OUTPUT_TYPE="kafka" \                        # Output type (Kafka)
+    -e OUTPUT_KAFKA_BROKERS=127.0.0.1:9092 \      # Kafka broker list
+    -e OUTPUT_KAFKA_TOPIC=dbxgo-events \          # Kafka topic for events
+    zhiqiangwang/dbxgo:latest
+```
+
+> You can refer to the environment variables at https://github.com/chihqiang/dbxgo/blob/main/.env.example.
+
 ## Notes
 
 1. **MySQL Configuration Requirements**:
