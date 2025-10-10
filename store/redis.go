@@ -14,19 +14,21 @@ type RedisConfig struct {
 	DB       int    `yaml:"db" json:"db" mapstructure:"db" env:"STORE_REDIS_DB" envDefault:"0"`
 }
 
-// RedisStore Redis
+// RedisStore Redis store implementation
 type RedisStore struct {
 	client *redis.Client
 	ctx    context.Context
 }
 
-// NewRedisStore 创建 RedisStore
+// NewRedisStore Creates a new RedisStore
 func NewRedisStore(cfg RedisConfig) (*RedisStore, error) {
 	var err error
+	// Merges the configuration with default values
 	cfg, err = structsx.MergeWithDefaults[RedisConfig](cfg)
 	if err != nil {
 		return nil, err
 	}
+	// Initializes the Redis client
 	rdb, err := redisx.Open(redisx.Config{
 		Addr:     cfg.Addr,
 		Password: cfg.Password,
@@ -41,7 +43,7 @@ func NewRedisStore(cfg RedisConfig) (*RedisStore, error) {
 	}, nil
 }
 
-// Has 判断 key 是否存在
+// Has Checks if the key exists
 func (r *RedisStore) Has(key string) bool {
 	exists, err := r.client.Exists(r.ctx, key).Result()
 	if err != nil {
@@ -50,12 +52,12 @@ func (r *RedisStore) Has(key string) bool {
 	return exists > 0
 }
 
-// Set 设置 key 对应的值
+// Set Sets the value for the given key
 func (r *RedisStore) Set(key string, value []byte) error {
 	return r.client.Set(r.ctx, key, value, 0).Err()
 }
 
-// Get 获取 key 对应的值
+// Get Gets the value of the given key
 func (r *RedisStore) Get(key string) ([]byte, error) {
 	val, err := r.client.Get(r.ctx, key).Bytes()
 	if err == redis.Nil {
@@ -63,10 +65,12 @@ func (r *RedisStore) Get(key string) ([]byte, error) {
 	}
 	return val, err
 }
+
+// Delete Deletes the given key
 func (r *RedisStore) Delete(key string) error {
 	err := r.client.Del(r.ctx, key).Err()
 	if err == redis.Nil {
-		// key 不存在也算删除成功
+		// Consider it successful if the key does not exist
 		return nil
 	}
 	return err

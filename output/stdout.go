@@ -7,15 +7,15 @@ import (
 	"github.com/chihqiang/dbxgo/types"
 )
 
-// StdoutOutput 控制台输出实现
+// StdoutOutput Console output implementation
 type StdoutOutput struct{}
 
-// NewStdoutOutput 创建 StdoutOutput 实例
+// NewStdoutOutput Creates a StdoutOutput instance
 func NewStdoutOutput() (*StdoutOutput, error) {
 	return &StdoutOutput{}, nil
 }
 
-// Send 输出事件到控制台
+// Send Outputs the event to the console
 func (s *StdoutOutput) Send(ctx context.Context, event types.EventData) error {
 	data, err := json.MarshalIndent(event, "", "  ")
 	if err != nil {
@@ -25,7 +25,7 @@ func (s *StdoutOutput) Send(ctx context.Context, event types.EventData) error {
 	return nil
 }
 
-// Close 控制台输出无需关闭资源
+// Close No resources to close for console output
 func (s *StdoutOutput) Close() error {
 	return nil
 }

@@ -6,16 +6,16 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// Config Redis 配置结构体
+// Config Redis configuration struct
 type Config struct {
 	Addr     string
 	Password string
 	DB       int
 }
 
-// Open 使用配置结构体创建 Redis 客户端
+// Open Creates a Redis client using the configuration struct
 func Open(cfg Config) (*redis.Client, error) {
-	// 设置默认值
+	// Set default values
 	if cfg.Addr == "" {
 		cfg.Addr = "127.0.0.1:6379"
 	}

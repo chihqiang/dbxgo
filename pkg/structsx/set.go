@@ -8,18 +8,18 @@ import (
 	"strings"
 )
 
-// EnvDefaultsSet 给结构体应用默认值，默认值来源于 tag。
+// EnvDefaultsSet Applies default values to the struct, with default values sourced from the tag.
 func EnvDefaultsSet(s any) error {
 	return (&DefaultSetter{TagName: "envDefault", Separator: ","}).Set(s)
 }
 
-// DefaultSetter 用于统一管理默认值应用
+// DefaultSetter Used to manage the application of default values uniformly.
 type DefaultSetter struct {
-	TagName   string // 用哪个 tag 名称
-	Separator string // slice 分隔符
+	TagName   string // The tag name to use for default values
+	Separator string // The separator for slice elements
 }
 
-// Set 给结构体应用默认值，s 必须是 struct 指针
+// Set Applies default values to the struct, s must be a pointer to a struct.
 func (sd *DefaultSetter) Set(s interface{}) error {
 	v := reflect.ValueOf(s)
 	if v.Kind() != reflect.Ptr || v.IsNil() {

@@ -21,7 +21,6 @@ func ListenCommand() *cli.Command {
 		Usage:                  "Listen to CDC events without sending them to any output",
 		Flags:                  []cli.Flag{},
 		Action: func(ctx context.Context, cmd *cli.Command) error {
-			// 从context中获取配置
 			cfg, ok := ctx.Value(ContextValueConfig).(*config.Config)
 			if !ok {
 				return fmt.Errorf("config not found in context")
@@ -31,29 +30,29 @@ func ListenCommand() *cli.Command {
 	}
 }
 
-// Listen 启动整个 CDC 监听流程，包括数据源、存储和输出处理
+// Listen starts the entire CDC listening process, including data source, storage, and output handling
 func Listen(ctx context.Context, config *config.Config) error {
-	// 创建 Store 实例
+	// Create Store instance
 	iStore, err := store.NewStore(config.Store)
 	if err != nil {
-		return err // 返回创建 Store 错误
+		return err // Return error if Store creation fails
 	}
-	// 创建数据源实例
+	// Create Source instance
 	iSource, err := source.NewSource(config.Source)
 	if err != nil {
-		return err // 返回创建 Source 错误
+		return err // Return error if Source creation fails
 	}
-	// 将 Store 注入到数据源
+	// Inject Store into Source
 	iSource.WithStore(iStore)
-	// 创建输出实例
+	// Create Output instance
 	iOutput, err := output.NewOutput(config.Output)
 	if err != nil {
-		return err // 返回创建 Output 错误
+		return err // Return error if Output creation fails
 	}
 
-	// 创建可取消上下文，用于控制 goroutine 生命周期
+	// Create cancellable context for controlling goroutine lifecycle
 	ctx, cancel := context.WithCancel(ctx)
-	// 定义关闭回调函数，统一关闭资源
+	// Define a callback function to close resources uniformly
 	closeCallback := func() {
 		slog.Info("closing source and output")
 		if err := iSource.Close(); err != nil {
@@ -62,67 +61,67 @@ func Listen(ctx context.Context, config *config.Config) error {
 		if err := iOutput.Close(); err != nil {
 			slog.Error("failed to close output", "error", err)
 		}
-		cancel() // 取消上下文
+		cancel() // Cancel the context
 	}
 
-	defer closeCallback() // 函数结束时自动调用关闭回调
+	defer closeCallback() // Automatically call close callback when function exits
 
-	// 创建用于监控数据源运行错误的通道
+	// Create a channel to monitor errors in the data source
 	sourceErrChan := make(chan error, 1)
 
-	// 启动 goroutine 运行数据源
+	// Start a goroutine to run the source
 	go func() {
 		slog.Info("starting source run goroutine")
 		if err := iSource.Run(ctx); err != nil {
-			// 数据源运行失败时记录错误并发送到通道
+			// Log error and send it to the channel if source run fails
 			slog.Error("source run failed", "error", err)
 			sourceErrChan <- err
 		}
-		close(sourceErrChan) // 数据源结束后关闭通道
+		close(sourceErrChan) // Close the channel after the source finishes
 	}()
 
-	// 定义 worker 数量，使用CPU核心数
+	// Define the number of workers, using the number of CPU cores
 	workerCount := runtime.NumCPU()
 	var wg sync.WaitGroup
 	wg.Add(workerCount)
 
-	// 启动 worker goroutine 处理数据源事件
+	// Start worker goroutines to handle data source events
 	for i := 0; i < workerCount; i++ {
 		go func(id int) {
-			defer wg.Done() // goroutine 结束时通知 WaitGroup
+			defer wg.Done() // Notify WaitGroup when the goroutine finishes
 			slog.Info("worker started", "workerID", id)
 			for {
 				select {
 				case event, ok := <-iSource.GetChanEventData():
-					// 读取事件通道
+					// Read events from the channel
 					if !ok {
-						// 通道关闭，worker 退出
+						// If the channel is closed, worker exits
 						slog.Info("event channel closed", "workerID", id)
 						return
 					}
 					slog.Info("CDC Event", slog.Any("event", event))
-					// 发送事件到输出
+					// Send event to output
 					if err := output.SendWithRetry(ctx, iOutput, event, 3); err != nil {
 						slog.Error("failed to send event", "workerID", id, "error", err)
 					}
 				case <-ctx.Done():
-					// 上下文取消，worker 退出
+					// If context is canceled, worker exits
 					slog.Info("context canceled, worker exiting", "workerID", id)
 					return
 				}
 			}
 		}(i)
 	}
-	// 等待数据源错误或 worker 完成
+	// Wait for data source errors or worker completion
 	err, ok := <-sourceErrChan
 	if ok && err != nil {
-		// 数据源运行错误时，关闭所有资源并等待 worker 退出
+		// If source run failed, close all resources and wait for workers to exit
 		closeCallback()
 		wg.Wait()
 		slog.Error("exiting program due to source run error", "error", err)
 		os.Exit(1)
 	}
-	// 数据源正常结束，等待 worker 完成
+	// If source run completed successfully, wait for workers to finish
 	wg.Wait()
 	return nil
 }

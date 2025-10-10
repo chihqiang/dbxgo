@@ -18,22 +18,22 @@ import (
 )
 
 var (
-	// DefaultMysqlExcludeTableRegex 默认排除的系统库表正则
-	// 这些库表一般为 MySQL 内置系统库，无需采集或处理
+	// DefaultMysqlExcludeTableRegex Default regular expression to exclude system tables
+	// These are built-in MySQL system tables that generally don't need to be collected or processed
 	DefaultMysqlExcludeTableRegex = []string{
-		"mysql.*",              // MySQL 系统库
-		"information_schema.*", // 信息架构库
-		"performance_schema.*", // 性能监控库
-		"sys.*",                // 系统视图库
+		"mysql.*",              // MySQL system database
+		"information_schema.*", // Information schema
+		"performance_schema.*", // Performance monitoring schema
+		"sys.*",                // System view schema
 	}
 )
 
-// MysqlConfig MySQL 配置实体
-// 用于描述 MySQL 数据源的连接信息和表过滤规则。
-// 表筛选逻辑：
-//  1. 优先根据 ExcludeTableRegex 进行排除
-//  2. 若 IncludeTableRegex 不为空，则仅包含匹配的表
-//  3. 如果两者都为空，则默认处理全部表
+// MysqlConfig MySQL configuration entity
+// Used to describe the MySQL datasource connection information and table filtering rules.
+// Table filtering logic:
+//  1. Exclude tables based on ExcludeTableRegex first
+//  2. If IncludeTableRegex is not empty, only include matching tables
+//  3. If both are empty, all tables are processed by default
 type MysqlConfig struct {
 	Addr              string   `yaml:"addr" json:"addr" mapstructure:"addr" env:"SOURCE_MYSQL_ADDR" envDefault:"127.0.0.1:3306"`
 	User              string   `yaml:"user" json:"user" mapstructure:"user" env:"SOURCE_MYSQL_USER" envDefault:"root"`
@@ -42,44 +42,44 @@ type MysqlConfig struct {
 	IncludeTableRegex []string `yaml:"include_table_regex" json:"include_table_regex" mapstructure:"include_table_regex" env:"SOURCE_MYSQL_INCLUDE_TABLE_REGEX"`
 }
 
-// MySQLSource 是MySQL数据源的具体实现
-// 负责连接MySQL数据库，监听binlog事件并转换为统一的事件格式
+// MySQLSource MySQL datasource specific implementation
+// Responsible for connecting to the MySQL database, listening to binlog events, and converting them to a unified event format
 type MySQLSource struct {
-	// mu 用于保证并发安全的互斥锁
+	// mu Mutex used to ensure concurrency safety
 	mu sync.Mutex
-	// 嵌入 canal.DummyEventHandler 以实现事件处理接口
+	// Embedding canal.DummyEventHandler to implement event handling interface
 	canal.DummyEventHandler
-	// store 存储接口，用于持久化或读取偏移量及状态
+	// store Storage interface for persisting or reading offsets and states
 	store store.IStore
-	// canal MySQL binlog 解析器实例
+	// canal MySQL binlog parser instance
 	canal *canal.Canal
-	// cfg 数据源配置信息
+	// cfg Datasource configuration information
 	cfg MysqlConfig
-	// eventDataChan 事件数据输出通道
+	// eventDataChan Event data output channel
 	eventDataChan chan types.EventData
-	// running 表示当前数据源是否正在运行
+	// running Indicates whether the datasource is running
 	running bool
 }
 
-// MysqlPosition 定义MySQL binlog位置信息结构
-// 用于保存和恢复同步位置
+// MysqlPosition MySQL binlog position structure
+// Used to save and restore sync positions
 type MysqlPosition struct {
-	// File binlog文件名
+	// File binlog file name
 	File string `json:"file"`
-	// Pos binlog文件中的位置偏移量
+	// Pos offset position in the binlog file
 	Pos uint32 `json:"pos"`
 }
 
-// NewMySQLSource 创建一个MySQL数据源实例
-// cfg: MySQL数据源配置信息
-// 返回值: 实现了ISource接口的MySQLSource实例和可能的错误
+// NewMySQLSource Creates a MySQL datasource instance
+// cfg: MySQL datasource configuration information
+// Returns: MySQLSource instance that implements the ISource interface and potential errors
 func NewMySQLSource(cfg MysqlConfig) (ISource, error) {
 	if len(cfg.ExcludeTableRegex) == 0 {
 		cfg.ExcludeTableRegex = DefaultMysqlExcludeTableRegex
 	}
 	cc := canal.NewDefaultConfig()
 
-	// 设置数据库连接信息
+	// Set database connection information
 	cc.Addr = cfg.Addr
 	cc.User = cfg.User
 	cc.Password = cfg.Password
@@ -90,36 +90,38 @@ func NewMySQLSource(cfg MysqlConfig) (ISource, error) {
 	if len(cfg.IncludeTableRegex) > 0 {
 		cc.IncludeTableRegex = cfg.IncludeTableRegex
 	}
-	// 创建MySQLSource实例
+	// Create MySQLSource instance
 	source := &MySQLSource{
 		cfg:           cfg,
-		eventDataChan: make(chan types.EventData, 10240), // 缓冲区大小为10240的事件通道
+		eventDataChan: make(chan types.EventData, 10240), // Event channel with buffer size 10240
 	}
-	// 创建canal实例
+	// Create canal instance
 	c, err := canal.NewCanal(cc)
 	if err != nil {
 		return nil, err
 	}
 
-	// 保存canal实例并设置事件处理器
+	// Save canal instance and set event handler
 	source.canal = c
 	source.canal.SetEventHandler(source)
 	return source, nil
 }
+
+// WithStore Sets the store for the MySQL source
 func (s *MySQLSource) WithStore(store store.IStore) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.store = store
 }
 
-// Run 启动MySQL数据源监听
-// ctx: 上下文，用于控制取消和超时
-// 返回值: 可能的错误
+// Run Starts the MySQL datasource listener
+// ctx: Context to control cancellation and timeout
+// Returns: Possible errors
 func (s *MySQLSource) Run(ctx context.Context) error {
 	if s.store == nil {
 		return fmt.Errorf("store is not initialized, cannot run MySQLSource")
 	}
-	// 检查是否已经在运行
+	// Check if already running
 	s.mu.Lock()
 	if s.running {
 		s.mu.Unlock()
@@ -127,26 +129,26 @@ func (s *MySQLSource) Run(ctx context.Context) error {
 	}
 	s.running = true
 	s.mu.Unlock()
-	// 加载上次保存的同步位置
+	// Load last saved sync position
 	startPos := s.loadPosition()
-	// 创建一个用于接收canal退出通知的通道
+	// Create a channel to receive canal exit notifications
 	done := make(chan error, 1)
 
-	// 启动canal监听（在后台goroutine中）
+	// Start canal listener in background goroutine
 	go func() {
-		// 使用RunFrom方法从指定位置开始同步binlog
+		// Use RunFrom method to start syncing binlog from the specified position
 		err := s.canal.RunFrom(startPos)
 		done <- err
 	}()
 
-	// 等待上下文结束或canal出错
+	// Wait for context cancellation or canal error
 	select {
 	case <-ctx.Done():
-		// 上下文取消，停止canal
+		// Context cancelled, stop canal
 		s.canal.Close()
 		return ctx.Err()
 	case err := <-done:
-		// canal出错，更新运行状态
+		// Canal error, update running state
 		s.mu.Lock()
 		s.running = false
 		s.mu.Unlock()
@@ -154,51 +156,51 @@ func (s *MySQLSource) Run(ctx context.Context) error {
 	}
 }
 
-// GetChanEventData 返回事件通道，供外部读取
-// 返回值: 只读的事件通道，外部通过此通道接收数据库变更事件
+// GetChanEventData Returns event channel for external reading
+// Returns: Read-only event channel, external receivers use it to get database change events
 func (s *MySQLSource) GetChanEventData() <-chan types.EventData {
 	return s.eventDataChan
 }
 
-// Close 关闭数据源，释放资源
-// 返回值: 可能的错误
+// Close Closes the datasource and releases resources
+// Returns: Possible errors
 func (s *MySQLSource) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	// 如果已经停止运行，则直接返回
+	// If already stopped, return directly
 	if !s.running {
 		return nil
 	}
 
-	// 关闭canal实例
+	// Close canal instance
 	if s.canal != nil {
 		s.canal.Close()
 	}
 
-	// 关闭事件通道
+	// Close event channel
 	close(s.eventDataChan)
 	s.running = false
 	return nil
 }
 
-// OnRow 处理行变更事件（实现canal.EventHandler接口）
-// e: 行变更事件对象
-// 返回值: 可能的错误
+// OnRow Handles row change events (implements canal.EventHandler interface)
+// e: Row change event object
+// Returns: Possible errors
 func (s *MySQLSource) OnRow(rowsEvent *canal.RowsEvent) error {
-	// 获取当前时间戳（毫秒）
-	// 处理每一行数据
+	// Get current timestamp (milliseconds)
+	// Process each row of data
 	for i := 0; i < len(rowsEvent.Rows); i++ {
 		row := rowsEvent.Rows[i]
 		var event types.EventData
 		event.Time = time.Now()
 		event.Pos = int64(rowsEvent.Header.LogPos)
 		event.ServerID = int64(rowsEvent.Header.ServerID)
-		// 填充事件基本信息
+		// Fill in event basic information
 		event.Row.Time = int64(rowsEvent.Header.Timestamp)
 		event.Row.Database = rowsEvent.Table.Schema
 		event.Row.Table = rowsEvent.Table.Name
-		// 根据操作类型处理不同的事件
+		// Handle different event types based on action
 		switch rowsEvent.Action {
 		case canal.InsertAction:
 			event.Row.Type = types.InsertEventRowType
@@ -209,12 +211,12 @@ func (s *MySQLSource) OnRow(rowsEvent *canal.RowsEvent) error {
 		case canal.UpdateAction:
 			event.Row.Type = types.UpdateEventRowType
 			oldRow := row
-			// 更新操作会有两行数据：旧数据和新数据
+			// Update action has two rows: old data and new data
 			if i+1 < len(rowsEvent.Rows) {
 				newRow := rowsEvent.Rows[i+1]
 				event.Row.Data = s.rowToMap(newRow, rowsEvent.Table)
 				event.Row.Old = s.rowToMap(oldRow, rowsEvent.Table)
-				i++ // 跳过下一行（新数据）
+				i++ // Skip the next row (new data)
 			} else {
 				event.Row.Data = s.rowToMap(row, rowsEvent.Table)
 			}
@@ -232,21 +234,21 @@ func (s *MySQLSource) OnRow(rowsEvent *canal.RowsEvent) error {
 	return nil
 }
 
-// OnPosSynced 处理binlog位置同步事件（实现canal.EventHandler接口）
-// header: 事件头部信息
-// pos: 当前同步位置
-// set: GTID集合
-// force: 是否强制同步
-// 返回值: 可能的错误
+// OnPosSynced Handles binlog position sync events (implements canal.EventHandler interface)
+// header: Event header information
+// pos: Current sync position
+// set: GTID set
+// force: Force sync or not
+// Returns: Possible errors
 func (s *MySQLSource) OnPosSynced(header *replication.EventHeader, pos mysql.Position, set mysql.GTIDSet, force bool) error {
-	// 保存当前同步位置
+	// Save current sync position
 	return s.savePosition(pos)
 }
 
-// rowToMap 将数据库行数据转换为键值对映射
-// row: 行数据数组
-// table: 表结构信息
-// 返回值: 字段名和值的映射
+// rowToMap Converts database row data to a key-value map
+// row: Row data array
+// table: Table schema information
+// Returns: Mapping of column names to values
 func (s *MySQLSource) rowToMap(row []interface{}, table *schema.Table) map[string]interface{} {
 	m := make(map[string]interface{})
 
@@ -331,35 +333,35 @@ func (s *MySQLSource) rowToMap(row []interface{}, table *schema.Table) map[strin
 	return m
 }
 
-// loadPosition 加载上次保存的同步位置
-// 返回值: MySQL binlog同步位置
+// loadPosition Loads the last saved sync position
+// Returns: MySQL binlog sync position
 func (s *MySQLSource) loadPosition() mysql.Position {
-	// 尝试从存储中加载上次保存的位置
+	// Try to load the last saved position from storage
 	positionBytes, err := s.store.Get(StoreKeyPosition)
 	if err == nil && len(positionBytes) > 0 {
 		var storePos MysqlPosition
 		_ = json.Unmarshal(positionBytes, &storePos)
 		if storePos.File != "" && storePos.Pos != 0 {
-			// 设置位置信息
+			// Set position information
 			return mysql.Position{Name: storePos.File, Pos: storePos.Pos}
 		}
 	}
-	// 如果加载失败，尝试获取主库当前位置
+	// If loading fails, try to get the position from the master
 	pos, err := s.canal.GetMasterPos()
 	if err == nil {
 		return pos
 	}
-	// 都失败则返回默认位置
+	// If all fails, return default position
 	return mysql.Position{}
 }
 
-// savePosition 保存当前位置信息
-// pos: 要保存的同步位置
-// 返回值: 可能的错误
+// savePosition Saves the current sync position
+// pos: Sync position to save
+// Returns: Possible errors
 func (s *MySQLSource) savePosition(pos mysql.Position) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	// 转换位置格式
+	// Convert position format
 	positionBytes, err := json.Marshal(MysqlPosition{
 		File: pos.Name,
 		Pos:  pos.Pos,

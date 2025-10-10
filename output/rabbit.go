@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// RabbitMQConfig RabbitMQ 配置实体
+// RabbitMQConfig RabbitMQ configuration entity
 type RabbitMQConfig struct {
 	URL        string `yaml:"url" json:"url" mapstructure:"url" env:"OUTPUT_RABBITMQ_URL" envDefault:"amqp://guest:guest@127.0.0.1:5672/"`
 	Exchange   string `yaml:"exchange" json:"exchange" mapstructure:"exchange" env:"OUTPUT_RABBITMQ_EXCHANGE" envDefault:"dbxgo-exchange"`
@@ -22,14 +22,14 @@ type RabbitMQConfig struct {
 	NoWait     bool   `yaml:"no_wait" json:"no_wait" mapstructure:"no_wait" env:"OUTPUT_RABBITMQ_NOWAIT" envDefault:"false"`
 }
 
-// RabbitMQOutput RabbitMQ 输出实现
+// RabbitMQOutput RabbitMQ output implementation
 type RabbitMQOutput struct {
 	config RabbitMQConfig
 	conn   *amqp091.Connection
 	ch     *amqp091.Channel
 }
 
-// NewRabbitMQOutput 创建 RabbitMQOutput，并测试连接
+// NewRabbitMQOutput Creates a RabbitMQOutput and tests the connection
 func NewRabbitMQOutput(cfg RabbitMQConfig) (*RabbitMQOutput, error) {
 	var (
 		err error
@@ -38,18 +38,18 @@ func NewRabbitMQOutput(cfg RabbitMQConfig) (*RabbitMQOutput, error) {
 	if err != nil {
 		return nil, err
 	}
-	// 建立 RabbitMQ 连接
+	// Establish RabbitMQ connection
 	conn, err := amqp091.Dial(cfg.URL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to RabbitMQ: %w", err)
 	}
-	// 打开 Channel
+	// Open a channel
 	ch, err := conn.Channel()
 	if err != nil {
 		_ = conn.Close()
 		return nil, fmt.Errorf("failed to open channel: %w", err)
 	}
-	// 声明队列
+	// Declare the queue
 	_, err = ch.QueueDeclare(
 		cfg.Queue,
 		cfg.Durable,
@@ -70,7 +70,7 @@ func NewRabbitMQOutput(cfg RabbitMQConfig) (*RabbitMQOutput, error) {
 	}, nil
 }
 
-// Send 将 EventJSON 序列化为 JSON 字符串并发送到 RabbitMQ
+// Send Serializes EventJSON to a JSON string and sends it to RabbitMQ
 func (r *RabbitMQOutput) Send(ctx context.Context, event types.EventData) error {
 	body, err := json.Marshal(event)
 	if err != nil {
@@ -89,7 +89,7 @@ func (r *RabbitMQOutput) Send(ctx context.Context, event types.EventData) error 
 	)
 }
 
-// Close 关闭 RabbitMQ 连接
+// Close Closes the RabbitMQ connection
 func (r *RabbitMQOutput) Close() error {
 	if r.ch != nil {
 		_ = r.ch.Close()

@@ -38,26 +38,26 @@ type Config struct {
 	Pulsar   PulsarConfig   `yaml:"pulsar" json:"pulsar" mapstructure:"pulsar"`
 }
 
-// IOutput 定义事件输出接口
+// IOutput Defines the event output interface
 type IOutput interface {
-	// Send 发送事件到下游
+	// Send Sends an event to the downstream
 	Send(ctx context.Context, event types.EventData) error
-	// Close 关闭资源
+	// Close Closes the resource
 	Close() error
 }
 
 func NewOutput(cfg Config) (IOutput, error) {
-	// 查找对应的构造函数
+	// Look up the corresponding constructor function
 	creator, exists := outputs[cfg.Type]
 	if !exists {
-		// 默认为Stdout输出
+		// Default to Stdout output
 		return NewStdoutOutput()
 	}
-	// 调用构造函数创建输出实例
+	// Call the constructor function to create the output instance
 	return creator(cfg)
 }
 
-// SendWithRetry 带重试的发送函数
+// SendWithRetry Sends with retry functionality
 func SendWithRetry(ctx context.Context, output IOutput, event types.EventData, maxRetries int) error {
 	var lastErr error
 	for i := 0; i <= maxRetries; i++ {

@@ -12,13 +12,13 @@ type FileConfig struct {
 	Dir string `yaml:"dir" json:"dir" mapstructure:"dir" env:"STORE_FILE_DIR"`
 }
 
-// FileStore 文件缓存实现，每个 key 对应一个文件
+// FileStore File-based cache implementation, each key corresponds to a file
 type FileStore struct {
 	dir   string
 	locks sync.Map // key -> *sync.RWMutex
 }
 
-// NewFileStore 创建文件缓存实例
+// NewFileStore Creates a new file cache instance
 func NewFileStore(config FileConfig) (*FileStore, error) {
 	if config.Dir == "" {
 		config.Dir = os.TempDir()
@@ -35,13 +35,13 @@ func (fs *FileStore) filePath(key string) string {
 	return filepath.Join(fs.dir, filename)
 }
 
-// getLock 获取 key 的锁
+// getLock Acquires the lock for the given key
 func (fs *FileStore) getLock(key string) *sync.RWMutex {
 	val, _ := fs.locks.LoadOrStore(key, &sync.RWMutex{})
 	return val.(*sync.RWMutex)
 }
 
-// Has 判断 key 是否存在
+// Has Checks if the key exists
 func (fs *FileStore) Has(key string) bool {
 	lock := fs.getLock(key)
 	lock.RLock()
@@ -50,7 +50,7 @@ func (fs *FileStore) Has(key string) bool {
 	return err == nil
 }
 
-// Set 写入 key 对应的文件（原子写入）
+// Set Writes the value corresponding to the key into a file (atomic write)
 func (fs *FileStore) Set(key string, value []byte) error {
 	lock := fs.getLock(key)
 	lock.Lock()
@@ -58,7 +58,7 @@ func (fs *FileStore) Set(key string, value []byte) error {
 	return os.WriteFile(fs.filePath(key), value, 0644)
 }
 
-// Get 读取 key 对应的文件
+// Get Reads the value corresponding to the key from the file
 func (fs *FileStore) Get(key string) ([]byte, error) {
 	lock := fs.getLock(key)
 	lock.RLock()
@@ -66,14 +66,14 @@ func (fs *FileStore) Get(key string) ([]byte, error) {
 	return os.ReadFile(fs.filePath(key))
 }
 
-// Delete 删除 key 对应的文件
+// Delete Deletes the file corresponding to the key
 func (fs *FileStore) Delete(key string) error {
 	lock := fs.getLock(key)
 	lock.Lock()
 	defer lock.Unlock()
 	path := fs.filePath(key)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return nil // 文件不存在也算删除成功
+		return nil // Consider the delete operation successful if the file doesn't exist
 	}
 	return os.Remove(path)
 }

@@ -12,31 +12,31 @@ import (
 	"github.com/chihqiang/dbxgo/types"
 )
 
-// RocketMQConfig RocketMQ 配置实体
+// RocketMQConfig RocketMQ configuration entity
 type RocketMQConfig struct {
-	// Servers - RocketMQ NameServer 地址列表，例如 ["127.0.0.1:9876"]
+	// Servers - RocketMQ NameServer address list, e.g., ["127.0.0.1:9876"]
 	Servers []string `yaml:"servers" json:"servers" mapstructure:"servers" env:"OUTPUT_ROCKETMQ_SERVERS" envDefault:"127.0.0.1:9876"`
-	// Topic - 消息发送的 Topic 名称
+	// Topic - The topic name to send the message
 	Topic string `yaml:"topic" json:"topic" mapstructure:"topic" env:"OUTPUT_ROCKETMQ_TOPIC" envDefault:"dbxgo-events"`
-	// Group - 生产者分组名称
+	// Group - The producer group name
 	Group string `yaml:"group" json:"group" mapstructure:"group" env:"OUTPUT_ROCKETMQ_GROUP"`
-	// Retry - 消息发送失败时的重试次数
+	// Retry - The number of retries if sending a message fails
 	Retry int `yaml:"retry" json:"retry" mapstructure:"retry" env:"OUTPUT_ROCKETMQ_RETRY" envDefault:"3"`
-	// Namespace - 命名空间
+	// Namespace - The namespace
 	Namespace string `yaml:"namespace" json:"namespace" mapstructure:"namespace" env:"OUTPUT_ROCKETMQ_NAMESPACE"`
-	// AccessKey - 访问密钥 AccessKey
+	// AccessKey - Access key
 	AccessKey string `yaml:"access_key" json:"access_key" mapstructure:"access_key" env:"OUTPUT_ROCKETMQ_ACCESS_KEY"`
-	// SecretKey - 访问密钥 SecretKey
+	// SecretKey - Secret key
 	SecretKey string `yaml:"secret_key" json:"secret_key" mapstructure:"secret_key" env:"OUTPUT_ROCKETMQ_SECRET_KEY"`
 }
 
-// RocketMQOutput RocketMQ 实现，满足 IOutput 接口
+// RocketMQOutput RocketMQ implementation that satisfies the IOutput interface
 type RocketMQOutput struct {
 	cfg      RocketMQConfig
 	producer rocketmq.Producer
 }
 
-// NewRocketMQOutput 创建 RocketMQOutput 并填充默认值
+// NewRocketMQOutput Creates a RocketMQOutput and fills in default values
 func NewRocketMQOutput(cfg RocketMQConfig) (*RocketMQOutput, error) {
 	var (
 		err error
@@ -45,7 +45,7 @@ func NewRocketMQOutput(cfg RocketMQConfig) (*RocketMQOutput, error) {
 	if err != nil {
 		return nil, err
 	}
-	// 创建生产者配置
+	// Create producer options
 	options := []producer.Option{
 		producer.WithNsResolver(primitive.NewPassthroughResolver(cfg.Servers)),
 		producer.WithRetry(cfg.Retry),
@@ -62,12 +62,12 @@ func NewRocketMQOutput(cfg RocketMQConfig) (*RocketMQOutput, error) {
 			SecretKey: cfg.SecretKey,
 		}))
 	}
-	// 创建生产者
+	// Create producer
 	p, err := rocketmq.NewProducer(options...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RocketMQ producer: %w", err)
 	}
-	// 启动生产者
+	// Start the producer
 	if err := p.Start(); err != nil {
 		return nil, fmt.Errorf("failed to start RocketMQ producer: %w", err)
 	}
@@ -77,7 +77,7 @@ func NewRocketMQOutput(cfg RocketMQConfig) (*RocketMQOutput, error) {
 	}, nil
 }
 
-// Send 将 EventData 序列化为 JSON 字符串并发送到 RocketMQ
+// Send Serializes the EventData to a JSON string and sends it to RocketMQ
 func (r *RocketMQOutput) Send(ctx context.Context, event types.EventData) error {
 	data, err := json.Marshal(event)
 	if err != nil {
@@ -91,7 +91,7 @@ func (r *RocketMQOutput) Send(ctx context.Context, event types.EventData) error 
 	return err
 }
 
-// Close 关闭 RocketMQ 生产者
+// Close Closes the RocketMQ producer
 func (r *RocketMQOutput) Close() error {
 	return r.producer.Shutdown()
 }

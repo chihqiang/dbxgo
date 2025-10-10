@@ -9,31 +9,31 @@ import (
 	"time"
 )
 
-// KafkaConfig Kafka 配置实体，用于初始化 KafkaOutput
+// KafkaConfig Kafka configuration entity, used to initialize KafkaOutput
 type KafkaConfig struct {
-	// Brokers Kafka broker 列表，例如 ["127.0.0.1:9092"]
+	// Brokers List of Kafka brokers, e.g., ["127.0.0.1:9092"]
 	Brokers []string `yaml:"brokers" json:"brokers" mapstructure:"brokers" env:"OUTPUT_KAFKA_BROKERS" envDefault:"127.0.0.1:9092"`
 
-	// Topic 要发送的 Kafka topic 名称
+	// Topic The name of the Kafka topic to send messages to
 	Topic string `yaml:"topic" json:"topic" mapstructure:"topic" env:"OUTPUT_KAFKA_TOPIC" envDefault:"dbxgo-events"`
 }
 
-// KafkaOutput Kafka 实现，满足 IOutput 接口
+// KafkaOutput Kafka implementation that satisfies the IOutput interface
 type KafkaOutput struct {
-	// writer Kafka 写入器
+	// writer Kafka writer
 	writer *kafka.Writer
-	// config Kafka 配置实体
+	// config Kafka configuration entity
 	config KafkaConfig
 }
 
-// NewKafkaOutput 使用配置实体创建 KafkaOutput
-// 参数:
+// NewKafkaOutput Creates a KafkaOutput using the configuration entity
+// Parameters:
 //
-//	cfg: KafkaConfig 配置结构体，包含 broker 列表和 topic 名称
+//	cfg: KafkaConfig configuration struct, contains broker list and topic name
 //
-// 返回:
+// Returns:
 //
-//	*KafkaOutput 实例
+//	*KafkaOutput instance
 func NewKafkaOutput(cfg KafkaConfig) (*KafkaOutput, error) {
 	var (
 		err error
@@ -42,17 +42,17 @@ func NewKafkaOutput(cfg KafkaConfig) (*KafkaOutput, error) {
 	if err != nil {
 		return nil, err
 	}
-	// 创建 Kafka writer
+	// Create Kafka writer
 	writer := &kafka.Writer{
-		// Kafka broker 地址列表
+		// Kafka broker address list
 		Addr: kafka.TCP(cfg.Brokers...),
-		// 消息发送到的 Kafka topic
+		// Kafka topic to send messages to
 		Topic: cfg.Topic,
-		// 分区选择策略，LeastBytes 表示选择当前负载最小的分区
+		// Partition selection strategy, LeastBytes means selecting the partition with the least load
 		Balancer: &kafka.LeastBytes{},
-		// 等待所有副本确认消息已写入，保证消息可靠性
+		// Wait for all replicas to confirm the message has been written, ensuring message reliability
 		RequiredAcks: kafka.RequireAll,
-		// 是否异步发送，false 表示同步发送
+		// Whether the send is asynchronous, false means synchronous sending
 		Async: false,
 	}
 	return &KafkaOutput{
@@ -61,16 +61,16 @@ func NewKafkaOutput(cfg KafkaConfig) (*KafkaOutput, error) {
 	}, nil
 }
 
-// Send 将 EventData 序列化为 JSON 字符串并发送到 Kafka
-// 参数:
+// Send Serializes EventData to a JSON string and sends it to Kafka
+// Parameters:
 //
-//	event: types.EventData 要发送的事件
+//	event: types.EventData the event to send
 //
-// 返回:
+// Returns:
 //
-//	error 发送失败时返回错误，否则为 nil
+//	error error if sending fails, otherwise nil
 func (k *KafkaOutput) Send(ctx context.Context, event types.EventData) error {
-	// 将事件序列化为 JSON 字符串
+	// Serialize the event into a JSON string
 	eventValue, err := json.Marshal(event)
 	if err != nil {
 		return err
@@ -81,10 +81,10 @@ func (k *KafkaOutput) Send(ctx context.Context, event types.EventData) error {
 	})
 }
 
-// Close 关闭 Kafka 连接
-// 返回:
+// Close Closes the Kafka connection
+// Returns:
 //
-//	error 关闭失败时返回错误，否则为 nil
+//	error error if closing fails, otherwise nil
 func (k *KafkaOutput) Close() error {
 	return k.writer.Close()
 }

@@ -5,20 +5,20 @@ import (
 	"reflect"
 )
 
-// MergeWithDefaults 先生成默认值结构体，再用用户传入的值覆盖非零字段。
-// 返回合并后的结构体。
+// MergeWithDefaults First, generate a struct with default values, then overwrite non-zero fields with values from the user.
+// Returns the merged struct.
 func MergeWithDefaults[T any](v T) (T, error) {
 	var def T
-	// 生成默认值结构体
+	// Generate a struct with default values
 	if err := EnvDefaultsSet(&def); err != nil {
 		return def, err
 	}
-	// 将用户传入的值覆盖默认值
+	// Overwrite the default values with the user's values
 	return MergeStructs[T](def, v)
 }
 
-// MergeStructs 合并多个结构体，后面的非零字段覆盖前面。
-// 支持值类型和指针类型 struct。
+// MergeStructs Merges multiple structs, where later non-zero fields overwrite earlier ones.
+// Supports both value types and pointer types of structs.
 func MergeStructs[T any](v ...T) (T, error) {
 	var zero T
 	if len(v) == 0 {
@@ -39,7 +39,7 @@ func MergeStructs[T any](v ...T) (T, error) {
 	default:
 		return zero, fmt.Errorf("unsupported type: %s", firstVal.Kind())
 	}
-	// 合并后续元素
+	// Merge subsequent elements
 	for _, item := range v[1:] {
 		val := reflect.ValueOf(item)
 		if val.Kind() == reflect.Ptr {
@@ -48,7 +48,7 @@ func MergeStructs[T any](v ...T) (T, error) {
 		if val.Kind() != reflect.Struct {
 			continue
 		}
-		// 遍历字段并合并非零值
+		// Iterate through fields and merge non-zero values
 		dst := result
 		if dst.Kind() == reflect.Ptr {
 			dst = dst.Elem()

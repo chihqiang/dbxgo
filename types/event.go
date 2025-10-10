@@ -2,42 +2,44 @@ package types
 
 import "time"
 
-// EventRowType 定义数据库操作类型枚举
-// 表示捕获到的数据库变更事件类型
+// EventRowType Defines an enumeration for database operation types
+// Represents the type of database change event captured
 
 type EventRowType string
 
 const (
-	// InsertEventRowType 表示插入操作类型
+	// InsertEventRowType Represents an insert operation type
 	InsertEventRowType EventRowType = "insert"
-	// UpdateEventRowType 表示更新操作类型
+	// UpdateEventRowType Represents an update operation type
 	UpdateEventRowType EventRowType = "update"
-	// DeleteEventRowType 表示删除操作类型
+	// DeleteEventRowType Represents a delete operation type
 	DeleteEventRowType EventRowType = "delete"
 )
 
-// EventData 是标准事件结构
-// 表示从数据库捕获到的变更事件
+// EventData Represents a standard event structure
+// Captures a database change event
+
 type EventData struct {
-	Time     time.Time    `json:"time"`
-	ServerID int64        `json:"server_id"`
-	Pos      int64        `json:"pos"`
-	Row      EventRowData `json:"row"`
+	Time     time.Time    `json:"time"`      // Timestamp of the event
+	ServerID int64        `json:"server_id"` // Server ID where the event was generated
+	Pos      int64        `json:"pos"`       // Log position for tracking
+	Row      EventRowData `json:"row"`       // The row data associated with the event
 }
 
-// EventRowData 是标准事件结构
-// 表示从数据库捕获到的变更事件
+// EventRowData Represents the row data of a database change event
+// Captures the details of the specific change event (insert, update, delete)
+
 type EventRowData struct {
-	// Time 事件发生时间戳（毫秒）
+	// Time Timestamp of the event occurrence (in milliseconds)
 	Time int64 `json:"time"`
-	// Database 数据库名称
+	// Database The name of the database where the change occurred
 	Database string `json:"database"`
-	// Table 数据表名称
+	// Table The name of the table where the change occurred
 	Table string `json:"table"`
-	// Type 事件类型（insert/update/delete）
+	// Type The type of the event (insert/update/delete)
 	Type EventRowType `json:"type"`
-	// Data 新数据内容，以字段名和值的映射表示
+	// Data The new data content, represented as a map of field names to values
 	Data map[string]any `json:"data"`
-	// Old 旧数据内容，仅在update事件中有值
+	// Old The old data content, only present for update events
 	Old map[string]any `json:"old,omitempty"`
 }
