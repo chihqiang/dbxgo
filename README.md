@@ -167,27 +167,29 @@ You can use Docker to run dbxgo in containerized environments. Here's how to bui
 # 1️⃣ MySQL only (read from MySQL)
 # =========================
 docker run -it --rm \
-    -e SOURCE_MYSQL_ADDR="192.168.110.41:3306" \   # MySQL host and port
-    -e SOURCE_MYSQL_USER="root" \                  # MySQL username
-    -e SOURCE_MYSQL_PASSWORD="123456" \            # MySQL password
-    zhiqiangwang/dbxgo:latest                      # Use latest dbxgo image
+    --name dbxgo \
+    -e SOURCE_MYSQL_ADDR="127.0.0.1:3306" \
+    -e SOURCE_MYSQL_USER="root" \
+    -e SOURCE_MYSQL_PASSWORD="123456" \
+    zhiqiangwang/dbxgo:latest
 
 # =========================
 # 2️⃣ MySQL → Redis & Redis
 # =========================
 docker run -it --rm \
-    -e SOURCE_MYSQL_ADDR="192.168.110.41:3306" \   # Source MySQL host
-    -e SOURCE_MYSQL_USER="root" \                  # Source MySQL username
-    -e SOURCE_MYSQL_PASSWORD="123456" \            # Source MySQL password
-    -e STORE_TYPE="redis" \                        # Internal metadata storage type (Redis)
-    -e STORE_REDIS_ADDR=127.0.0.1:6379 \     # Internal Redis address
-    -e STORE_REDIS_PASSWORD=123456 \  # Internal Redis password
-    -e STORE_REDIS_DB=1 \                           # Internal Redis DB
-    -e OUTPUT_TYPE="redis" \                        # Output type (target Redis)
-    -e OUTPUT_REDIS_ADDR=127.0.0.1:6379 \    # Target Redis address
-    -e OUTPUT_REDIS_PASSWORD=123456 \ # Target Redis password
-    -e OUTPUT_REDIS_DB=1 \                          # Target Redis DB
-    -e OUTPUT_REDIS_KEY=dbxgo-events \             # Target Redis key prefix
+    --name dbxgo \
+    -e SOURCE_MYSQL_ADDR="127.0.0.1:3306" \
+    -e SOURCE_MYSQL_USER="root" \
+    -e SOURCE_MYSQL_PASSWORD="123456" \
+    -e STORE_TYPE="redis" \
+    -e STORE_REDIS_ADDR="127.0.0.1:6379" \
+    -e STORE_REDIS_PASSWORD="123456" \
+    -e STORE_REDIS_DB="1" \
+    -e OUTPUT_TYPE="redis" \
+    -e OUTPUT_REDIS_ADDR="127.0.0.1:6379" \
+    -e OUTPUT_REDIS_PASSWORD="123456" \
+    -e OUTPUT_REDIS_DB="1" \
+    -e OUTPUT_REDIS_KEY="dbxgo-events" \
     zhiqiangwang/dbxgo:latest
 ```
 
