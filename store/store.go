@@ -43,15 +43,53 @@ type Config struct {
 
 // IStore Interface for storage operations
 // All concrete store types must implement this interface
+// IStore defines the interface for a generic key-value storage system.
+// Implementations can provide persistent or in-memory storage.
 type IStore interface {
-	// Set stores the value associated with the key
+	// Set stores the value associated with the key.
+	//
+	// Parameters:
+	//   - key: the key to store the value under.
+	//   - value: the data to store as a byte slice.
+	//
+	// Returns:
+	//   - error: non-nil if storing the value fails (e.g., IO error).
 	Set(key string, value []byte) error
-	// Get retrieves the value associated with the key
+
+	// Get retrieves the value associated with the key.
+	//
+	// Parameters:
+	//   - key: the key whose value should be retrieved.
+	//
+	// Returns:
+	//   - []byte: the value associated with the key.
+	//   - error: non-nil if the key does not exist or retrieval fails.
 	Get(key string) ([]byte, error)
-	// Has checks if the key exists
+
+	// Has checks if the key exists in the store.
+	//
+	// Parameters:
+	//   - key: the key to check for existence.
+	//
+	// Returns:
+	//   - bool: true if the key exists, false otherwise.
 	Has(key string) bool
-	// Delete removes the key-value pair
+
+	// Delete removes the key-value pair from the store.
+	//
+	// Parameters:
+	//   - key: the key to delete.
+	//
+	// Returns:
+	//   - error: non-nil if the deletion fails (e.g., key does not exist, IO error).
 	Delete(key string) error
+
+	// Close releases any resources held by the store.
+	// This should be called when the store is no longer needed.
+	//
+	// Returns:
+	//   - error: non-nil if closing the store fails.
+	Close() error
 }
 
 // NewStore Creates a new store instance based on the provided configuration

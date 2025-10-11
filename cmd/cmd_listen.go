@@ -9,7 +9,6 @@ import (
 	"github.com/chihqiang/dbxgo/store"
 	"github.com/urfave/cli/v3"
 	"log/slog"
-	"os"
 	"runtime"
 	"sync"
 )
@@ -19,109 +18,115 @@ func ListenCommand() *cli.Command {
 		UseShortOptionHandling: true,
 		Name:                   "listen",
 		Usage:                  "Listen to CDC events without sending them to any output",
-		Flags:                  []cli.Flag{},
+		Flags: []cli.Flag{
+			&cli.IntFlag{
+				Name:    "processor",
+				Aliases: []string{"p"},
+				Value:   runtime.NumCPU(),
+				Usage:   "Number of processors to handle CDC events",
+			},
+		},
 		Action: func(ctx context.Context, cmd *cli.Command) error {
 			cfg, ok := ctx.Value(ContextValueConfig).(*config.Config)
 			if !ok {
 				return fmt.Errorf("config not found in context")
 			}
-			return Listen(ctx, cfg)
+			processorCount := cmd.Int("processor")
+			if processorCount <= 0 {
+				processorCount = runtime.NumCPU()
+			}
+			return Listen(ctx, processorCount, cfg)
 		},
 	}
 }
 
 // Listen starts the entire CDC listening process, including data source, storage, and output handling
-func Listen(ctx context.Context, config *config.Config) error {
-	// Create Store instance
-	iStore, err := store.NewStore(config.Store)
+func Listen(ctx context.Context, processorCount int, cfg *config.Config) error {
+	// Initialize store
+	iStore, err := store.NewStore(cfg.Store)
 	if err != nil {
-		return err // Return error if Store creation fails
+		return fmt.Errorf("failed to initialize store: %w", err)
 	}
-	// Create Source instance
-	iSource, err := source.NewSource(config.Source)
+
+	// Initialize source
+	iSource, err := source.NewSource(cfg.Source)
 	if err != nil {
-		return err // Return error if Source creation fails
+		_ = iStore.Close()
+		return fmt.Errorf("failed to initialize source: %w", err)
 	}
-	// Inject Store into Source
 	iSource.WithStore(iStore)
-	// Create Output instance
-	iOutput, err := output.NewOutput(config.Output)
+
+	// Initialize output
+	iOutput, err := output.NewOutput(cfg.Output)
 	if err != nil {
-		return err // Return error if Output creation fails
+		_ = iSource.Close()
+		_ = iStore.Close()
+		return fmt.Errorf("failed to initialize output: %w", err)
 	}
 
-	// Create cancellable context for controlling goroutine lifecycle
+	// Create cancellable context
 	ctx, cancel := context.WithCancel(ctx)
-	// Define a callback function to close resources uniformly
+
+	// Ensure resources are closed only once
+	var once sync.Once
 	closeCallback := func() {
-		slog.Info("closing source and output")
-		if err := iSource.Close(); err != nil {
-			slog.Error("failed to close source", "error", err)
-		}
-		if err := iOutput.Close(); err != nil {
-			slog.Error("failed to close output", "error", err)
-		}
-		cancel() // Cancel the context
+		once.Do(func() {
+			slog.Info("closing source and output")
+			_ = iSource.Close()
+			_ = iOutput.Close()
+			cancel()
+		})
 	}
+	defer closeCallback()
 
-	defer closeCallback() // Automatically call close callback when function exits
-
-	// Create a channel to monitor errors in the data source
+	// Channel to capture source errors
 	sourceErrChan := make(chan error, 1)
 
-	// Start a goroutine to run the source
+	// Run source in a goroutine
 	go func() {
 		slog.Info("starting source run goroutine")
 		if err := iSource.Run(ctx); err != nil {
-			// Log error and send it to the channel if source run fails
 			slog.Error("source run failed", "error", err)
-			sourceErrChan <- err
+			select {
+			case sourceErrChan <- err:
+			default:
+				slog.Warn("source error channel full, dropping error")
+			}
 		}
-		close(sourceErrChan) // Close the channel after the source finishes
+		close(sourceErrChan)
 	}()
 
-	// Define the number of workers, using the number of CPU cores
-	workerCount := runtime.NumCPU()
+	// Start processor goroutines
 	var wg sync.WaitGroup
-	wg.Add(workerCount)
+	wg.Add(processorCount)
 
-	// Start worker goroutines to handle data source events
-	for i := 0; i < workerCount; i++ {
+	for i := 0; i < processorCount; i++ {
 		go func(id int) {
-			defer wg.Done() // Notify WaitGroup when the goroutine finishes
-			slog.Info("worker started", "workerID", id)
-			for {
-				select {
-				case event, ok := <-iSource.GetChanEventData():
-					// Read events from the channel
-					if !ok {
-						// If the channel is closed, worker exits
-						slog.Info("event channel closed", "workerID", id)
-						return
-					}
-					slog.Info("CDC Event", slog.Any("event", event))
-					// Send event to output
-					if err := output.SendWithRetry(ctx, iOutput, event, 3); err != nil {
-						slog.Error("failed to send event", "workerID", id, "error", err)
-					}
-				case <-ctx.Done():
-					// If context is canceled, worker exits
-					slog.Info("context canceled, worker exiting", "workerID", id)
-					return
+			defer wg.Done()
+			slog.Info("processor started", "id", id)
+			for event := range iSource.GetChanEventData() {
+				slog.Debug("CDC Event", slog.Any("event", event))
+				if err := output.SendWithRetry(ctx, iOutput, event, 3); err != nil {
+					slog.Error("failed to send event", "processorID", id, "error", err)
 				}
 			}
+			slog.Info("processor exiting", "id", id)
 		}(i)
 	}
-	// Wait for data source errors or worker completion
-	err, ok := <-sourceErrChan
-	if ok && err != nil {
-		// If source run failed, close all resources and wait for workers to exit
-		closeCallback()
-		wg.Wait()
-		slog.Error("exiting program due to source run error", "error", err)
-		os.Exit(1)
+
+	// Wait for source errors or context cancellation
+	select {
+	case err := <-sourceErrChan:
+		if err != nil {
+			closeCallback()
+			wg.Wait()
+			return fmt.Errorf("source run failed: %w", err)
+		}
+	case <-ctx.Done():
+		slog.Info("context canceled, shutting down")
 	}
-	// If source run completed successfully, wait for workers to finish
+
+	// Wait for all processors to finish
 	wg.Wait()
 	return nil
 }

@@ -77,3 +77,7 @@ func (fs *FileStore) Delete(key string) error {
 	}
 	return os.Remove(path)
 }
+
+func (fs *FileStore) Close() error {
+	return nil
+}

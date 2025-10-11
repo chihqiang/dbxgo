@@ -75,3 +75,9 @@ func (r *RedisStore) Delete(key string) error {
 	}
 	return err
 }
+func (r *RedisStore) Close() error {
+	if r.client != nil {
+		return r.client.Close()
+	}
+	return nil
+}

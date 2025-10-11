@@ -21,7 +21,7 @@ source:
   mysql:
     addr: "127.0.0.1:3306"   # Database address (host:port)
     user: "root"              # Database username (recommended to use a dedicated account in production)
-    password: ""              # Database password
+    password: "123456"        # Database password
     exclude_table_regex:      # Tables to exclude (regex patterns)
       - "mysql.*"
       - "information_schema.*"
