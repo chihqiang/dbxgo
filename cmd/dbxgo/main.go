@@ -25,7 +25,8 @@ func main() {
 	app.Usage = "a Go CDC tool that real-time captures, processes database changes and sends them to downstream"
 	app.Version = version
 	cli.VersionPrinter = func(cmd *cli.Command) {
-		fmt.Printf("dbxgo version %s %s/%s\n", cmd.Version, runtime.GOOS, runtime.GOARCH)
+		_, _ = fmt.Fprintf(cmd.Root().Writer, "%s %s — built with %s on %s/%s\n",
+			cmd.Name, cmd.Version, runtime.Version(), runtime.GOOS, runtime.GOARCH)
 	}
 	app.Flags = cmd.Flags()
 	app.Before = cmd.Before
