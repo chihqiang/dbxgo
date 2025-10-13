@@ -15,7 +15,7 @@ WORKDIR /app
 COPY . .
 
 # Build the Go binary with the specified version
-RUN make build VERSION=${DBXGO_VERSION}
+RUN GOOS=linux make build VERSION=${DBXGO_VERSION}
 
 # ---------- Runtime stage ----------
 # Use minimal Debian image for runtime
