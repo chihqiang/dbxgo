@@ -6,6 +6,8 @@ import (
 
 type StoreType string
 
+const keyPrefix = "dbxgo-"
+
 const (
 	// FileStoreType Type for File Store
 	FileStoreType StoreType = "file"

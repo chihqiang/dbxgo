@@ -32,7 +32,7 @@ func NewFileStore(config FileConfig) (*FileStore, error) {
 func (fs *FileStore) filePath(key string) string {
 	hash := md5.Sum([]byte(key))
 	filename := hex.EncodeToString(hash[:])
-	return filepath.Join(fs.dir, filename)
+	return filepath.Join(fs.dir, keyPrefix+filename)
 }
 
 // getLock Acquires the lock for the given key
