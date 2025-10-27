@@ -1,0 +1,44 @@
+# docker-compose -f tests/pulsar.yml up -d
+# docker-compose -f tests/pulsar.yml down
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: dbxgo-mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: dbxgo
+      TZ: Asia/Shanghai
+    volumes:
+      - ./:/dbxgo
+    networks:
+      - dbxgo-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p123456" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pulsar:
+    image: apachepulsar/pulsar:4.1.1
+    container_name: dbxgo-pulsar
+    networks:
+      - dbxgo-network
+    ports:
+      - "6650:6650"
+      - "8080:8080"
+    command: bin/pulsar standalone
+    environment:
+      PULSAR_MEM: "-Xms512m -Xmx512m"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/admin/v2/brokers || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+networks:
+  dbxgo-network:
+    driver: bridge

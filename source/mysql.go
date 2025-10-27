@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/chihqiang/dbxgo/pkg/cmdx"
+	"github.com/chihqiang/dbxgo/pkg/logx"
 	"github.com/chihqiang/dbxgo/store"
 	"github.com/chihqiang/dbxgo/types"
 	"github.com/go-mysql-org/go-mysql/canal"
 	"github.com/go-mysql-org/go-mysql/mysql"
 	"github.com/go-mysql-org/go-mysql/replication"
 	"github.com/go-mysql-org/go-mysql/schema"
-	"log/slog"
 	"strconv"
 	"sync"
 	"time"
@@ -227,10 +227,9 @@ func (s *MySQLSource) OnRow(rowsEvent *canal.RowsEvent) error {
 		select {
 		case s.eventDataChan <- event:
 		default:
-			slog.Warn("Event channel is full, discarding event", "db", event.Row.Database, "table", event.Row.Table)
+			logx.Warn("Event channel is full, discarding event, db: %s, table: %s", event.Row.Database, event.Row.Table)
 		}
 	}
-
 	return nil
 }
 

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/chihqiang/dbxgo/config"
 	"github.com/chihqiang/dbxgo/output"
+	"github.com/chihqiang/dbxgo/pkg/logx"
 	"github.com/chihqiang/dbxgo/source"
 	"github.com/chihqiang/dbxgo/store"
-	"log/slog"
 )
 
 // SetupComponents components: Store, Source, Output
@@ -29,14 +29,14 @@ func SetupComponents(cfg *config.Config) (source.ISource, store.IStore, output.I
 
 // CloseSetupComponents resources uniformly
 func CloseSetupComponents(iSource source.ISource, iStore store.IStore, iOutput output.IOutput) {
-	slog.Info("closing source and output")
+	logx.Info("closing source and output")
 	if err := iSource.Close(); err != nil {
-		slog.Error("failed to close source", "error", err)
+		logx.Error("failed to close source: %v", err)
 	}
 	if err := iStore.Close(); err != nil {
-		slog.Error("failed to close store", "error", err)
+		logx.Error("failed to close store: %v", err)
 	}
 	if err := iOutput.Close(); err != nil {
-		slog.Error("failed to close output", "error", err)
+		logx.Error("failed to close output: %v", err)
 	}
 }

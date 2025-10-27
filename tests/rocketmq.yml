@@ -1,0 +1,76 @@
+# docker-compose -f tests/rocketmq.yml up -d
+# docker-compose -f tests/rocketmq.yml down
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: dbxgo-mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: dbxgo
+      TZ: Asia/Shanghai
+    volumes:
+      - ./:/dbxgo
+    networks:
+      - dbxgo-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p123456" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rocketmq-nameserver:
+    image: apache/rocketmq:4.9.7
+    container_name: dbxgo-rocketmq-nameserver
+    networks:
+      - dbxgo-network
+    ports:
+      - "9876:9876"
+    environment:
+      JAVA_OPT: "-Duser.timezone=Asia/Shanghai"
+    command: sh mqnamesrv
+    healthcheck:
+      test: [ "CMD-SHELL", "echo stat | nc localhost 9876 | grep -q OK" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  rocketmq-broker:
+    image: apache/rocketmq:4.9.7
+    container_name: dbxgo-rocketmq-broker
+    networks:
+      - dbxgo-network
+    ports:
+      - "10911:10911"
+      - "10909:10909"
+    environment:
+      JAVA_OPT: "-Duser.timezone=Asia/Shanghai"
+      NAMESRV_ADDR: rocketmq-nameserver:9876
+      BROKER_ID: 0
+      BROKER_CLUSTER_NAME: DefaultCluster
+      BROKER_NAME: broker-a
+    depends_on:
+      - rocketmq-nameserver
+    command: sh mqbroker -n rocketmq-nameserver:9876 autoCreateTopicEnable=true
+    healthcheck:
+      test: [ "CMD-SHELL", "echo brokerStatus | nc localhost 10911 | grep -q OK || exit 0" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+  rocketmq-init:
+    image: apache/rocketmq:4.9.7
+    container_name: dbxgo-rocketmq-init
+    networks:
+      - dbxgo-network
+    depends_on:
+      rocketmq-broker:
+        condition: service_healthy
+    command: sh -c "sh mqadmin updateTopic -n rocketmq-nameserver:9876 -c DefaultCluster -t dbxgo-events"
+    restart: "no"
+networks:
+  dbxgo-network:
+    driver: bridge
