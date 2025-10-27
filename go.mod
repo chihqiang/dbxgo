@@ -6,6 +6,7 @@ require (
 	github.com/apache/pulsar-client-go v0.16.0
 	github.com/apache/rocketmq-client-go/v2 v2.1.2
 	github.com/caarlos0/env/v11 v11.3.1
+	github.com/fatih/color v1.18.0
 	github.com/go-mysql-org/go-mysql v1.13.0
 	github.com/joho/godotenv v1.5.1
 	github.com/rabbitmq/amqp091-go v1.10.0
@@ -46,6 +47,8 @@ require (
 	github.com/hamba/avro/v2 v2.26.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect

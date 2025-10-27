@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/chihqiang/dbxgo/config"
 	"github.com/chihqiang/dbxgo/output"
+	"github.com/chihqiang/dbxgo/pkg/logx"
 	"github.com/chihqiang/dbxgo/source"
 	"github.com/urfave/cli/v3"
-	"log/slog"
 	"runtime"
 )
 
@@ -40,10 +40,9 @@ func Listen(ctx context.Context, config *config.Config) error {
 	workerCount := runtime.NumCPU()
 	startWorkers(ctx, iSource, iOutput, workerCount)
 	if err := waitSourceError(sourceErrChan); err != nil {
-		slog.Error("source error detected, shutting down", "error", err)
 		return err
 	}
-	slog.Info("CDC process completed successfully")
+	logx.Info("CDC process completed successfully")
 	return nil
 }
 
@@ -51,9 +50,9 @@ func Listen(ctx context.Context, config *config.Config) error {
 func startSource(ctx context.Context, iSource source.ISource) <-chan error {
 	errChan := make(chan error, 1)
 	go func() {
-		slog.Info("starting source goroutine")
+		logx.Info("starting source goroutine")
 		if err := iSource.Run(ctx); err != nil {
-			slog.Error("source run failed", "error", err)
+			logx.Error("source run failed: %v", err)
 			errChan <- err
 		}
 		close(errChan)
@@ -66,25 +65,25 @@ func startWorkers(ctx context.Context, iSource source.ISource, iOutput output.IO
 	for i := 0; i < workerCount; i++ {
 		go workerLoop(ctx, i, iSource, iOutput)
 	}
-	slog.Info("started all workers", "count", workerCount)
+	logx.Info("started all workers, count: %d", workerCount)
 }
 
 // Worker main loop
 func workerLoop(ctx context.Context, id int, iSource source.ISource, iOutput output.IOutput) {
-	slog.Info("worker started", "workerID", id)
+	logx.Info("worker started, workerID: %d", id)
 	for {
 		select {
 		case event, ok := <-iSource.GetChanEventData():
 			if !ok {
-				slog.Info("event channel closed", "workerID", id)
+				logx.Info("event channel closed, workerID: %d", id)
 				return
 			}
-			slog.Info("CDC Event", slog.Any("event", event))
+			logx.Info("CDC Event: %+v", event)
 			if err := output.SendWithRetry(ctx, iOutput, event, 3); err != nil {
-				slog.Error("failed to send event", "workerID", id, "error", err)
+				logx.Error("failed to send event, workerID: %d, error: %v", id, err)
 			}
 		case <-ctx.Done():
-			slog.Info("context canceled, worker exiting", "workerID", id)
+			logx.Info("context canceled, worker exiting, workerID: %d", id)
 			return
 		}
 	}

@@ -4,9 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/chihqiang/dbxgo/cmd"
+	"github.com/chihqiang/dbxgo/pkg/logx"
 	"github.com/urfave/cli/v3"
-	"log"
-	"log/slog"
 	"os"
 	"runtime"
 )
@@ -16,7 +15,6 @@ var (
 )
 
 func init() {
-	slog.SetLogLoggerLevel(slog.LevelDebug)
 }
 
 func main() {
@@ -38,6 +36,7 @@ func main() {
 		return listenCmd.Action(ctx, command)
 	}
 	if err := app.Run(context.Background(), os.Args); err != nil {
-		log.Fatal(err)
+		logx.Error("%v", err)
+		os.Exit(1)
 	}
 }
