@@ -79,6 +79,7 @@ func workerLoop(ctx context.Context, id int, iSource source.ISource, iOutput out
 				slog.Info("event channel closed", "workerID", id)
 				return
 			}
+			slog.Info("CDC Event", slog.Any("event", event))
 			if err := output.SendWithRetry(ctx, iOutput, event, 3); err != nil {
 				slog.Error("failed to send event", "workerID", id, "error", err)
 			}

@@ -1,0 +1,42 @@
+# docker-compose -f tests/redis.yml up -d
+# docker-compose -f tests/redis.yml down
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: dbxgo-mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: dbxgo
+      TZ: Asia/Shanghai
+    volumes:
+      - ./:/dbxgo
+    networks:
+      - dbxgo-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p123456" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:5
+    container_name: dbxgo-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    environment:
+      TZ: Asia/Shanghai
+    networks:
+      - dbxgo-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 3s
+      timeout: 3s
+      retries: 3
+
+networks:
+  dbxgo-network:
+    driver: bridge
