@@ -3,8 +3,8 @@ package source
 import (
 	"context"
 	"fmt"
-	"github.com/chihqiang/dbxgo/store"
-	"github.com/chihqiang/dbxgo/types"
+	"chihqiang/dbxgo/store"
+	"chihqiang/dbxgo/types"
 )
 
 const (

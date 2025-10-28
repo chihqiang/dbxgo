@@ -1,10 +1,10 @@
 package main
 
 import (
+	"chihqiang/dbxgo/cmd"
+	"chihqiang/dbxgo/pkg/logx"
 	"context"
 	"fmt"
-	"github.com/chihqiang/dbxgo/cmd"
-	"github.com/chihqiang/dbxgo/pkg/logx"
 	"github.com/urfave/cli/v3"
 	"os"
 	"runtime"

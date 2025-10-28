@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"context"
-	"github.com/chihqiang/dbxgo/config"
+	"chihqiang/dbxgo/config"
 	"github.com/urfave/cli/v3"
 )
 

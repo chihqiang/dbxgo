@@ -2,7 +2,7 @@ package output
 
 import (
 	"context"
-	"github.com/chihqiang/dbxgo/types"
+	"chihqiang/dbxgo/types"
 	"time"
 )
 

@@ -3,10 +3,10 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/chihqiang/dbxgo/config"
-	"github.com/chihqiang/dbxgo/output"
-	"github.com/chihqiang/dbxgo/pkg/logx"
-	"github.com/chihqiang/dbxgo/source"
+	"chihqiang/dbxgo/config"
+	"chihqiang/dbxgo/output"
+	"chihqiang/dbxgo/pkg/logx"
+	"chihqiang/dbxgo/source"
 	"github.com/urfave/cli/v3"
 	"runtime"
 )

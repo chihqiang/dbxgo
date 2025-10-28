@@ -3,8 +3,8 @@ package output
 import (
 	"context"
 	"encoding/json"
-	"github.com/chihqiang/dbxgo/pkg/structsx"
-	"github.com/chihqiang/dbxgo/types"
+	"chihqiang/dbxgo/pkg/structsx"
+	"chihqiang/dbxgo/types"
 	"github.com/segmentio/kafka-go"
 	"time"
 )

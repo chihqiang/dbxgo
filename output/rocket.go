@@ -8,8 +8,8 @@ import (
 	"github.com/apache/rocketmq-client-go/v2"
 	"github.com/apache/rocketmq-client-go/v2/primitive"
 	"github.com/apache/rocketmq-client-go/v2/producer"
-	"github.com/chihqiang/dbxgo/pkg/structsx"
-	"github.com/chihqiang/dbxgo/types"
+	"chihqiang/dbxgo/pkg/structsx"
+	"chihqiang/dbxgo/types"
 )
 
 // RocketMQConfig RocketMQ configuration entity

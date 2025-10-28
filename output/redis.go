@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/chihqiang/dbxgo/pkg/redisx"
-	"github.com/chihqiang/dbxgo/pkg/structsx"
-	"github.com/chihqiang/dbxgo/types"
+	"chihqiang/dbxgo/pkg/redisx"
+	"chihqiang/dbxgo/pkg/structsx"
+	"chihqiang/dbxgo/types"
 	"github.com/redis/go-redis/v9"
 )
 

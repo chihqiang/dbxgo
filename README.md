@@ -17,9 +17,11 @@ dbxgo is an efficient Go-based Change Data Capture (CDC) tool that real-time mon
 ## Supported Components
 
 ### Data Sources
+
 - MySQL (via binlog parsing)
 
 ### Outputs
+
 - Standard Output (stdout)
 - [Redis](https://redis.io/)
 - [Kafka](https://kafka.apache.org/)
@@ -28,6 +30,7 @@ dbxgo is an efficient Go-based Change Data Capture (CDC) tool that real-time mon
 - [Pulsar](https://pulsar.apache.org/)
 
 ### Storage
+
 - File Storage
 - Redis Storage
 
