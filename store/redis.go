@@ -3,8 +3,8 @@ package store
 import (
 	"context"
 	"fmt"
-	"github.com/chihqiang/dbxgo/pkg/redisx"
-	"github.com/chihqiang/dbxgo/pkg/structsx"
+	"chihqiang/dbxgo/pkg/redisx"
+	"chihqiang/dbxgo/pkg/structsx"
 	"github.com/redis/go-redis/v9"
 )
 

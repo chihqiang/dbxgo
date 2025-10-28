@@ -1,4 +1,4 @@
-module github.com/chihqiang/dbxgo
+module chihqiang/dbxgo
 
 go 1.23.12
 

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/alicebob/miniredis/v2"
-	"github.com/chihqiang/dbxgo/types"
+	"chihqiang/dbxgo/types"
 	"github.com/stretchr/testify/assert"
 )
 

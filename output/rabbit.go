@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/chihqiang/dbxgo/pkg/structsx"
-	"github.com/chihqiang/dbxgo/types"
+	"chihqiang/dbxgo/pkg/structsx"
+	"chihqiang/dbxgo/types"
 	"github.com/rabbitmq/amqp091-go"
 	"time"
 )

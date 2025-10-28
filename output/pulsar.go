@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/apache/pulsar-client-go/pulsar"
-	"github.com/chihqiang/dbxgo/pkg/structsx"
-	"github.com/chihqiang/dbxgo/types"
+	"chihqiang/dbxgo/pkg/structsx"
+	"chihqiang/dbxgo/types"
 	"time"
 )
 

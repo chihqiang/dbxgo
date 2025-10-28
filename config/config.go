@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"github.com/caarlos0/env/v11"
-	"github.com/chihqiang/dbxgo/output"
-	"github.com/chihqiang/dbxgo/source"
-	"github.com/chihqiang/dbxgo/store"
+	"chihqiang/dbxgo/output"
+	"chihqiang/dbxgo/source"
+	"chihqiang/dbxgo/store"
 	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v3"
 )
