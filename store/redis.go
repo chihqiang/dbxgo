@@ -1,10 +1,10 @@
 package store
 
 import (
+	"chihqiang/dbxgo/pkg/redisx"
+	"chihqiang/dbxgo/pkg/structx"
 	"context"
 	"fmt"
-	"chihqiang/dbxgo/pkg/redisx"
-	"chihqiang/dbxgo/pkg/structsx"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -24,7 +24,7 @@ type RedisStore struct {
 func NewRedisStore(cfg RedisConfig) (*RedisStore, error) {
 	var err error
 	// Merges the configuration with default values
-	cfg, err = structsx.MergeWithDefaults[RedisConfig](cfg)
+	cfg, err = structx.MergeWithDefaults[RedisConfig](cfg)
 	if err != nil {
 		return nil, err
 	}

@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"chihqiang/dbxgo/pkg/structx"
+	"chihqiang/dbxgo/types"
 	"github.com/apache/rocketmq-client-go/v2"
 	"github.com/apache/rocketmq-client-go/v2/primitive"
 	"github.com/apache/rocketmq-client-go/v2/producer"
-	"chihqiang/dbxgo/pkg/structsx"
-	"chihqiang/dbxgo/types"
 )
 
 // RocketMQConfig RocketMQ configuration entity
@@ -41,7 +41,7 @@ func NewRocketMQOutput(cfg RocketMQConfig) (*RocketMQOutput, error) {
 	var (
 		err error
 	)
-	cfg, err = structsx.MergeWithDefaults[RocketMQConfig](cfg)
+	cfg, err = structx.MergeWithDefaults[RocketMQConfig](cfg)
 	if err != nil {
 		return nil, err
 	}
