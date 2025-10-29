@@ -1,11 +1,11 @@
 package output
 
 import (
+	"chihqiang/dbxgo/pkg/structx"
+	"chihqiang/dbxgo/types"
 	"context"
 	"encoding/json"
 	"fmt"
-	"chihqiang/dbxgo/pkg/structsx"
-	"chihqiang/dbxgo/types"
 	"github.com/rabbitmq/amqp091-go"
 	"time"
 )
@@ -34,7 +34,7 @@ func NewRabbitMQOutput(cfg RabbitMQConfig) (*RabbitMQOutput, error) {
 	var (
 		err error
 	)
-	cfg, err = structsx.MergeWithDefaults[RabbitMQConfig](cfg)
+	cfg, err = structx.MergeWithDefaults[RabbitMQConfig](cfg)
 	if err != nil {
 		return nil, err
 	}

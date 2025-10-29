@@ -1,12 +1,12 @@
 package output
 
 import (
+	"chihqiang/dbxgo/pkg/redisx"
+	"chihqiang/dbxgo/pkg/structx"
+	"chihqiang/dbxgo/types"
 	"context"
 	"encoding/json"
 	"fmt"
-	"chihqiang/dbxgo/pkg/redisx"
-	"chihqiang/dbxgo/pkg/structsx"
-	"chihqiang/dbxgo/types"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -27,7 +27,7 @@ type RedisOutput struct {
 // NewRedisOutput Creates a RedisOutput and fills in default values
 func NewRedisOutput(cfg RedisConfig) (*RedisOutput, error) {
 	var err error
-	cfg, err = structsx.MergeWithDefaults[RedisConfig](cfg)
+	cfg, err = structx.MergeWithDefaults[RedisConfig](cfg)
 	if err != nil {
 		return nil, err
 	}

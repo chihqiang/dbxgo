@@ -1,4 +1,4 @@
-package structsx
+package structx
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 func MergeWithDefaults[T any](v T) (T, error) {
 	var def T
 	// Generate a struct with default values
-	if err := EnvDefaultsSet(&def); err != nil {
+	if err := SetEnvDefault(&def); err != nil {
 		return def, err
 	}
 	// Overwrite the default values with the user's values

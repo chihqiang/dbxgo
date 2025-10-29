@@ -1,10 +1,10 @@
 package output
 
 import (
+	"chihqiang/dbxgo/pkg/structx"
+	"chihqiang/dbxgo/types"
 	"context"
 	"encoding/json"
-	"chihqiang/dbxgo/pkg/structsx"
-	"chihqiang/dbxgo/types"
 	"github.com/segmentio/kafka-go"
 	"time"
 )
@@ -38,7 +38,7 @@ func NewKafkaOutput(cfg KafkaConfig) (*KafkaOutput, error) {
 	var (
 		err error
 	)
-	cfg, err = structsx.MergeWithDefaults[KafkaConfig](cfg)
+	cfg, err = structx.MergeWithDefaults[KafkaConfig](cfg)
 	if err != nil {
 		return nil, err
 	}
