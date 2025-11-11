@@ -1,8 +1,8 @@
 package output
 
 import (
-	"context"
 	"chihqiang/dbxgo/types"
+	"context"
 	"time"
 )
 
@@ -15,15 +15,29 @@ var (
 	OutputTypeRabbitMQ OutputType = "rabbitmq"
 	OutputTypeRocketMQ OutputType = "rocketmq"
 	OutputTypePulsar   OutputType = "pulsar"
-	outputs                       = map[OutputType]func(Config) (IOutput, error){
-		OutputTypeStdout:   func(cfg Config) (IOutput, error) { return NewStdoutOutput() },
-		OutputTypeRedis:    func(cfg Config) (IOutput, error) { return NewRedisOutput(cfg.Redis) },
-		OutputTypeKafka:    func(cfg Config) (IOutput, error) { return NewKafkaOutput(cfg.Kafka) },
-		OutputTypeRabbitMQ: func(cfg Config) (IOutput, error) { return NewRabbitMQOutput(cfg.RabbitMQ) },
-		OutputTypeRocketMQ: func(cfg Config) (IOutput, error) { return NewRocketMQOutput(cfg.RocketMQ) },
-		OutputTypePulsar:   func(cfg Config) (IOutput, error) { return NewPulsarOutput(cfg.Pulsar) },
-	}
+	outputs                       = map[OutputType]func(Config) (IOutput, error){}
 )
+
+func init() {
+	Register(OutputTypeStdout, func(config Config) (IOutput, error) {
+		return NewStdoutOutput()
+	})
+	Register(OutputTypeRedis, func(cfg Config) (IOutput, error) {
+		return NewRedisOutput(cfg.Redis)
+	})
+	Register(OutputTypeKafka, func(cfg Config) (IOutput, error) {
+		return NewKafkaOutput(cfg.Kafka)
+	})
+	Register(OutputTypeRabbitMQ, func(cfg Config) (IOutput, error) {
+		return NewRabbitMQOutput(cfg.RabbitMQ)
+	})
+	Register(OutputTypeRocketMQ, func(cfg Config) (IOutput, error) {
+		return NewRocketMQOutput(cfg.RocketMQ)
+	})
+	Register(OutputTypePulsar, func(cfg Config) (IOutput, error) {
+		return NewPulsarOutput(cfg.Pulsar)
+	})
+}
 
 func Register(outputType OutputType, fn func(Config) (IOutput, error)) {
 	outputs[outputType] = fn

@@ -17,17 +17,17 @@ const (
 
 var (
 	// stores holds the registered store creators for different types
-	stores = map[StoreType]func(cfg Config) (IStore, error){
-		// For file store, create a new file store instance
-		FileStoreType: func(cfg Config) (IStore, error) {
-			return NewFileStore(cfg.File)
-		},
-		// For Redis store, create a new Redis store instance
-		RedisStoreType: func(cfg Config) (IStore, error) {
-			return NewRedisStore(cfg.Redis)
-		},
-	}
+	stores = map[StoreType]func(cfg Config) (IStore, error){}
 )
+
+func init() {
+	Register(FileStoreType, func(cfg Config) (IStore, error) {
+		return NewFileStore(cfg.File)
+	})
+	Register(RedisStoreType, func(cfg Config) (IStore, error) {
+		return NewRedisStore(cfg.Redis)
+	})
+}
 
 // Register registers a custom store creator function for a given store type
 func Register(storeType StoreType, fn func(Config) (IStore, error)) {
