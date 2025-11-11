@@ -20,7 +20,7 @@ jobs:
           if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
             TAG=${GITHUB_REF#refs/tags/}
             CLEAN_TAG=${TAG#v}
-            echo "tags=zhiqiangwang/dbxgo:latest,zhiqiangwang/dbxgo:${CLEAN_TAG}" >> $GITHUB_OUTPUT
+            echo "tags=zhiqiangwang/dbxgo:latest" >> $GITHUB_OUTPUT
             echo "dbxgo_version=${TAG}" >> $GITHUB_OUTPUT
           else
             echo "tags=zhiqiangwang/dbxgo:nightly" >> $GITHUB_OUTPUT
