@@ -1,10 +1,10 @@
 package output
 
 import (
-	"chihqiang/dbxgo/pkg/structx"
-	"chihqiang/dbxgo/types"
 	"context"
 	"encoding/json"
+	"github.com/chihqiang/dbxgo/pkg/structx"
+	"github.com/chihqiang/dbxgo/types"
 	"github.com/segmentio/kafka-go"
 	"time"
 )

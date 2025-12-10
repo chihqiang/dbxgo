@@ -1,8 +1,8 @@
 package output
 
 import (
-	"chihqiang/dbxgo/types"
 	"context"
+	"github.com/chihqiang/dbxgo/types"
 	"time"
 )
 

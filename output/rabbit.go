@@ -1,11 +1,11 @@
 package output
 
 import (
-	"chihqiang/dbxgo/pkg/structx"
-	"chihqiang/dbxgo/types"
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/chihqiang/dbxgo/pkg/structx"
+	"github.com/chihqiang/dbxgo/types"
 	"github.com/rabbitmq/amqp091-go"
 	"time"
 )

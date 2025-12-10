@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/apache/pulsar-client-go/pulsar"
-	"chihqiang/dbxgo/types"
+	"github.com/chihqiang/dbxgo/types"
 	"github.com/stretchr/testify/assert"
 )
 

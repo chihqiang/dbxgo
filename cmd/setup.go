@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"chihqiang/dbxgo/config"
-	"chihqiang/dbxgo/output"
-	"chihqiang/dbxgo/pkg/logx"
-	"chihqiang/dbxgo/source"
-	"chihqiang/dbxgo/store"
+	"github.com/chihqiang/dbxgo/config"
+	"github.com/chihqiang/dbxgo/output"
+	"github.com/chihqiang/dbxgo/pkg/logx"
+	"github.com/chihqiang/dbxgo/source"
+	"github.com/chihqiang/dbxgo/store"
 )
 
 // SetupComponents components: Store, Source, Output

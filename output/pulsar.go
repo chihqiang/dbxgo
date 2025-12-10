@@ -1,11 +1,11 @@
 package output
 
 import (
-	"chihqiang/dbxgo/pkg/structx"
-	"chihqiang/dbxgo/types"
 	"context"
 	"encoding/json"
 	"github.com/apache/pulsar-client-go/pulsar"
+	"github.com/chihqiang/dbxgo/pkg/structx"
+	"github.com/chihqiang/dbxgo/types"
 	"time"
 )
 

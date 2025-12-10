@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"chihqiang/dbxgo/types"
+	"github.com/chihqiang/dbxgo/types"
 )
 
 // StdoutOutput Console output implementation
