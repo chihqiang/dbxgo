@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/chihqiang/dbxgo/cmd"
-	"github.com/chihqiang/dbxgo/pkg/logx"
+	"github.com/chihqiang/logx"
 	"github.com/urfave/cli/v3"
 	"os"
 	"runtime"

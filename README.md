@@ -45,16 +45,28 @@ dbxgo is an efficient Go-based Change Data Capture (CDC) tool that real-time mon
 
 ### Installation
 
+### Prerequisites
+
+- Go **1.23+** (latest version recommended)
+- `$GOPATH/bin` added to your `$PATH`
+
+### Option 1: Install via `go install` (Recommended)
+
+This is the simplest and recommended way to install **dbxgo**:
+
 ```bash
+go install github.com/chihqiang/dbxgo/cmd/dbxgo@latest
+```
+
+### Option 2: Build from Source
+
+If you want to modify the source code or contribute to development, build from source:
+
+```
 # Clone the repository
 git clone https://github.com/chihqiang/dbxgo.git
-cd dbxgo
-
-# Build the project
-make build
-
-# Or use Go command directly
-go build -o dbxgo ./cmd/dbxgo/
+cd dbxgo && make build
+cp ./dbxgo /usr/local/bin/
 ```
 
 ### Usage Example
@@ -65,13 +77,11 @@ go build -o dbxgo ./cmd/dbxgo/
 
 ```bash
 # Using the default config.yml
-./dbxgo
-
+dbxgo
 # Using a specific config file
-./dbxgo -c path/to/config.yml
-
+dbxgo -c path/to/config.yml
 # Explicitly using the listen command
-./dbxgo listen -c path/to/config.yml
+dbxgo listen -c path/to/config.yml
 ```
 
 ## Configuration File Description

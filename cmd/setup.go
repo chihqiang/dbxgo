@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/chihqiang/dbxgo/config"
 	"github.com/chihqiang/dbxgo/output"
-	"github.com/chihqiang/dbxgo/pkg/logx"
 	"github.com/chihqiang/dbxgo/source"
 	"github.com/chihqiang/dbxgo/store"
+	"github.com/chihqiang/logx"
 )
 
 // SetupComponents components: Store, Source, Output

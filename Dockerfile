@@ -1,12 +1,12 @@
 # ---------- Build stage ----------
 # Use Go Alpine image as builder for smaller image and faster build
-FROM golang:1.23-alpine AS builder
+FROM golang:1.23-bookworm AS builder
 
 # Set build-time argument for version
 ARG DBXGO_VERSION=main
 
 # Install dependencies for building Go project
-RUN apk add --no-cache git make gcc musl-dev
+RUN apt-get update && apt-get install -y git make gcc libc6-dev && rm -rf /var/lib/apt/lists/*
 
 # Set working directory inside container
 WORKDIR /app
