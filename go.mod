@@ -7,7 +7,7 @@ require (
 	github.com/apache/pulsar-client-go v0.16.0
 	github.com/apache/rocketmq-client-go/v2 v2.1.2
 	github.com/caarlos0/env/v11 v11.3.1
-	github.com/chihqiang/logx v0.0.0-20251218085236-fa4e219d0ac9
+	github.com/chihqiang/logx v0.1.0
 	github.com/go-mysql-org/go-mysql v1.13.0
 	github.com/joho/godotenv v1.5.1
 	github.com/rabbitmq/amqp091-go v1.10.0
