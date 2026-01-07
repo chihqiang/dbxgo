@@ -1,8 +1,21 @@
-# dbxgo
+<div align="center">
+<h1>dbxgo</h1>
+
+[![Auth](https://img.shields.io/badge/Auth-chihqiang-ff69b4)](https://github.com/chihqiang)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/chihqiang/dbxgo)](https://github.com/chihqiang/dbxgo/pulls)
+[![Go Report Card](https://goreportcard.com/badge/github.com/chihqiang/dbxgo)](https://goreportcard.com/report/github.com/chihqiang/dbxgo)
+[![Release](https://img.shields.io/github/release/chihqiang/dbxgo.svg?style=flat-square)](https://github.com/chihqiang/dbxgo/releases)
+[![GitHub Pull Requests](https://img.shields.io/github/stars/chihqiang/dbxgo)](https://github.com/chihqiang/dbxgo/stargazers)
+[![HitCount](https://views.whatilearened.today/views/github/chihqiang/dbxgo.svg)](https://github.com/chihqiang/dbxgo)
+[![GitHub license](https://img.shields.io/github/license/chihqiang/dbxgo)](https://github.com/chihqiang/dbxgo/blob/main/LICENSE)
+
+<p>
+ dbxgo is an efficient Go-based Change Data Capture (CDC) tool that real-time monitors database changes, parses and processes events, and sends them to message queues or other downstream systems.
+</p>
+
+</div>
 
 ## Project Overview
-
-dbxgo is an efficient Go-based Change Data Capture (CDC) tool that real-time monitors database changes, parses and processes events, and sends them to message queues or other downstream systems.
 
 ## Features
 
