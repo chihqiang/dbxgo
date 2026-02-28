@@ -1,6 +1,6 @@
 # ---------- Build stage ----------
 # Use Go Alpine image as builder for smaller image and faster build
-FROM golang:1.23-bookworm AS builder
+FROM golang:1.24-bookworm AS builder
 
 # Set build-time argument for version
 ARG DBXGO_VERSION=main
