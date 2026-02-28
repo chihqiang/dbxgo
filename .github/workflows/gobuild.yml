@@ -1,0 +1,41 @@
+name: go build
+
+on:
+  release:
+    types: [ created ]
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release-linux-amd64:
+    name: release linux/amd64
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23'
+          
+      - name: Run Go Multi-Platform Build Action
+        id: build
+        uses: chihqiang/gobuild-action@main
+        with:
+          bin_name: dbxgo
+          version: ${{ github.ref_name }}
+          main_go: cmd/dbxgo/main.go
+          add_files: |
+            README.md
+            LICENSE
+            config.yml
+            .env.example
+          dist_root_path: dist
+          
+      - name: Upload release assets
+        uses: chihqiang/upload-asset-action@main
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          files: ${{ env.GOBUILD_FILES }}
