@@ -35,8 +35,5 @@ jobs:
             .env.example
           dist_root_path: dist
           
-      - name: Upload release assets
-        uses: chihqiang/upload-asset-action@main
-        with:
-          github_token: ${{ secrets.GH_TOKEN }}
-          files: ${{ env.GOBUILD_FILES }}
+      - name: upload-gh-release-assets
+        uses: chihqiang/upload-asset-action@v0.2.0
