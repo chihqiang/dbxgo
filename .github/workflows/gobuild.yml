@@ -23,7 +23,6 @@ jobs:
       - name: Run Go Multi-Platform Build Action
         id: build
         uses: chihqiang/gobuild-action@main
-
         with:
           bin_name: dbxgo
           version: ${{ github.ref_name }}
