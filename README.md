@@ -1,3 +1,5 @@
+
+
 <div align="center">
 <h1>dbxgo</h1>
 
@@ -21,7 +23,7 @@
 
 - **Real-time Capture**: Monitor database change events in real-time through binlog parsing
 - **Unified Event Format**: Convert changes from different databases into a consistent JSON format
-- **Multiple Output Support**: Send events to various downstream systems including stdout, Redis, Kafka, RabbitMQ, and RocketMQ
+- **Multiple Output Support**: Send events to various downstream systems including stdout, Redis, Kafka, RabbitMQ, RocketMQ, and Pulsar
 - **Checkpoint Resumption**: Store synchronization positions to achieve breakpoint resumption
 - **Extensible Architecture**: Easy to extend with new data sources and output types
 - **Worker Pool Processing**: Process events efficiently with worker goroutines
