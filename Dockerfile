@@ -1,6 +1,7 @@
 # ---------- Build stage ----------
 # Use Go Alpine image as builder for smaller image and faster build
-FROM golang:1.24-bookworm AS builder
+# NOTE: keep in sync with the `go` directive in go.mod (go 1.25.14)
+FROM golang:1.25.14-bookworm AS builder
 
 # Set build-time argument for version
 ARG DBXGO_VERSION=main
@@ -15,7 +16,7 @@ WORKDIR /app
 COPY . .
 
 # Build the Go binary with the specified version
-RUN GOOS=linux make build VERSION=${DBXGO_VERSION}
+RUN GOOS=linux make build DBXGO_VERSION=${DBXGO_VERSION}
 
 # ---------- Runtime stage ----------
 # Use minimal Debian image for runtime
@@ -45,7 +46,6 @@ ENV STORE_TYPE=file
 ENV SOURCE_TYPE=mysql
 ENV SOURCE_MYSQL_ADDR=127.0.0.1:3306
 ENV SOURCE_MYSQL_USER=root
-ENV SOURCE_MYSQL_PASSWORD=""
 ENV SOURCE_MYSQL_INCLUDE_TABLE_REGEX=""
 ENV SOURCE_MYSQL_EXCLUDE_TABLE_REGEX="mysql.*,information_schema.*,performance_schema.*,sys.*"
 
