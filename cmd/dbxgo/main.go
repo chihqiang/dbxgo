@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"github.com/chihqiang/dbxgo/cmd"
-	"github.com/chihqiang/logx"
-	"github.com/urfave/cli/v3"
 	"os"
 	"runtime"
+
+	"github.com/chihqiang/cli"
+	"github.com/chihqiang/dbxgo/cmd"
+	"github.com/chihqiang/logx"
 )
 
 var (
@@ -22,18 +22,18 @@ func main() {
 	app.Name = "dbxgo"
 	app.Usage = "a Go CDC tool that real-time captures, processes database changes and sends them to downstream"
 	app.Version = version
-	cli.VersionPrinter = func(cmd *cli.Command) {
-		_, _ = fmt.Fprintf(cmd.Root().Writer, "%s %s — built with %s on %s/%s\n",
-			cmd.Name, cmd.Version, runtime.Version(), runtime.GOOS, runtime.GOARCH)
+	app.VersionPrinter = func(ctx context.Context, in *cli.Input, out *cli.Output) {
+		out.Infof("%s %s — built with %s on %s/%s",
+			in.Command().Name, in.Command().Version, runtime.Version(), runtime.GOOS, runtime.GOARCH)
 	}
 	app.Flags = cmd.Flags()
 	app.Before = cmd.Before
-	app.Commands = []*cli.Command{
+	app.Subcommands = []*cli.Command{
 		cmd.ListenCommand(),
 	}
-	app.Action = func(ctx context.Context, command *cli.Command) error {
+	app.Action = func(ctx context.Context, in *cli.Input, out *cli.Output) error {
 		listenCmd := cmd.ListenCommand()
-		return listenCmd.Action(ctx, command)
+		return listenCmd.Action(ctx, in, out)
 	}
 	if err := app.Run(context.Background(), os.Args); err != nil {
 		logx.Error("%v", err)

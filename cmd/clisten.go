@@ -3,21 +3,21 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"runtime"
+
+	"github.com/chihqiang/cli"
 	"github.com/chihqiang/dbxgo/config"
 	"github.com/chihqiang/dbxgo/output"
 	"github.com/chihqiang/dbxgo/source"
 	"github.com/chihqiang/logx"
-	"github.com/urfave/cli/v3"
-	"runtime"
 )
 
 func ListenCommand() *cli.Command {
 	return &cli.Command{
-		UseShortOptionHandling: true,
-		Name:                   "listen",
-		Usage:                  "Listen to CDC events without sending them to any output",
-		Flags:                  []cli.Flag{},
-		Action: func(ctx context.Context, cmd *cli.Command) error {
+		Name:  "listen",
+		Usage: "Listen to CDC events without sending them to any output",
+		Flags: []cli.Flag{},
+		Action: func(ctx context.Context, _ *cli.Input, _ *cli.Output) error {
 			cfg, ok := ctx.Value(ContextValueConfig).(*config.Config)
 			if !ok {
 				return fmt.Errorf("config not found in context")
