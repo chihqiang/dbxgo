@@ -1,6 +1,6 @@
 package cmd
 
-import "github.com/urfave/cli/v3"
+import "github.com/chihqiang/cli"
 
 const (
 	FlagConfig = "config"

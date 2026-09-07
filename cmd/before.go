@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"context"
+
+	"github.com/chihqiang/cli"
 	"github.com/chihqiang/dbxgo/config"
-	"github.com/urfave/cli/v3"
 )
 
 type ContextValue string
@@ -13,8 +14,8 @@ var (
 )
 
 // Before loads the configuration file and returns
-func Before(ctx context.Context, command *cli.Command) (context.Context, error) {
-	conf, err := config.Load(command.String(FlagConfig))
+func Before(ctx context.Context, in *cli.Input, _ *cli.Output) (context.Context, error) {
+	conf, err := config.Load(in.String(FlagConfig))
 	if err != nil {
 		return ctx, err
 	}
