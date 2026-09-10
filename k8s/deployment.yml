@@ -27,7 +27,7 @@ spec:
               value: 123456
             - name: SOURCE_MYSQL_EXCLUDE_TABLE_REGEX
               value: "mysql.*,information_schema.*,performance_schema.*,sys.*"
-          image: zhiqiangwang/cdc-trigger:latest
+          image: zhiqiangwang/app:cdc-trigger
           imagePullPolicy: Always
           name: cdc-trigger
           resources:
