@@ -196,7 +196,7 @@ docker run -it --rm \
     -e SOURCE_MYSQL_ADDR="127.0.0.1:3306" \
     -e SOURCE_MYSQL_USER="root" \
     -e SOURCE_MYSQL_PASSWORD="123456" \
-    zhiqiangwang/cdc-trigger:latest
+    zhiqiangwang/app:cdc-trigger
 
 # =========================
 # 2️⃣ MySQL → Redis & Redis
@@ -215,7 +215,7 @@ docker run -it --rm \
     -e OUTPUT_REDIS_PASSWORD="123456" \
     -e OUTPUT_REDIS_DB="1" \
     -e OUTPUT_REDIS_KEY="cdc-trigger-events" \
-    zhiqiangwang/cdc-trigger:latest
+    zhiqiangwang/app:cdc-trigger
 ```
 
 ## Notes
