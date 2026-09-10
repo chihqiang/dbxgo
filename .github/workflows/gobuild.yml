@@ -24,9 +24,9 @@ jobs:
         id: build
         uses: chihqiang/gobuild-action@main
         with:
-          bin_name: dbxgo
+          bin_name: cdc-trigger
           version: ${{ github.ref_name }}
-          main_go: cmd/dbxgo/main.go
+          main_go: cmd/cdc-trigger/main.go
           add_files: |
             README.md
             LICENSE

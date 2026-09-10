@@ -3,10 +3,11 @@ package output
 import (
 	"context"
 	"encoding/json"
-	"github.com/chihqiang/dbxgo/pkg/structx"
-	"github.com/chihqiang/dbxgo/types"
-	"github.com/segmentio/kafka-go"
 	"time"
+
+	"github.com/chihqiang/cdc-trigger/pkg/structx"
+	"github.com/chihqiang/cdc-trigger/types"
+	"github.com/segmentio/kafka-go"
 )
 
 // KafkaConfig Kafka configuration entity, used to initialize KafkaOutput
@@ -15,7 +16,7 @@ type KafkaConfig struct {
 	Brokers []string `yaml:"brokers" json:"brokers" mapstructure:"brokers" env:"OUTPUT_KAFKA_BROKERS" envDefault:"127.0.0.1:9092"`
 
 	// Topic The name of the Kafka topic to send messages to
-	Topic string `yaml:"topic" json:"topic" mapstructure:"topic" env:"OUTPUT_KAFKA_TOPIC" envDefault:"dbxgo-events"`
+	Topic string `yaml:"topic" json:"topic" mapstructure:"topic" env:"OUTPUT_KAFKA_TOPIC" envDefault:"cdc-trigger-events"`
 }
 
 // KafkaOutput Kafka implementation that satisfies the IOutput interface

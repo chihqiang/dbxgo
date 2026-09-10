@@ -3,8 +3,8 @@ package cmd
 import (
 	"context"
 
+	"github.com/chihqiang/cdc-trigger/config"
 	"github.com/chihqiang/cli"
-	"github.com/chihqiang/dbxgo/config"
 )
 
 type ContextValue string

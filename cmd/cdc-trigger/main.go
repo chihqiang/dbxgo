@@ -5,8 +5,8 @@ import (
 	"os"
 	"runtime"
 
+	"github.com/chihqiang/cdc-trigger/cmd"
 	"github.com/chihqiang/cli"
-	"github.com/chihqiang/dbxgo/cmd"
 	"github.com/chihqiang/logx"
 )
 
@@ -19,7 +19,7 @@ func init() {
 
 func main() {
 	app := &cli.Command{}
-	app.Name = "dbxgo"
+	app.Name = "cdc-trigger"
 	app.Usage = "a Go CDC tool that real-time captures, processes database changes and sends them to downstream"
 	app.Version = version
 	app.VersionPrinter = func(ctx context.Context, in *cli.Input, out *cli.Output) {

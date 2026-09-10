@@ -1,11 +1,11 @@
-DBXGO_VERSION ?= $(shell git describe --tags --always)
-OUTPUT := dbxgo
-MAIN := cmd/dbxgo/main.go
-# make build DBXGO_VERSION=v1.0.0
+CDC_TRIGGER_VERSION ?= $(shell git describe --tags --always)
+OUTPUT := cdc-trigger
+MAIN := cmd/cdc-trigger/main.go
+# make build CDC_TRIGGER_VERSION=v1.0.0
 build:
 
-	@echo "Building $(OUTPUT) with version $(DBXGO_VERSION) ..."
-	GO111MODULE=on CGO_ENABLED=0 go build -ldflags "-s -w -X main.version=$(DBXGO_VERSION)" -o $(OUTPUT) $(MAIN)
+	@echo "Building $(OUTPUT) with version $(CDC_TRIGGER_VERSION) ..."
+	GO111MODULE=on CGO_ENABLED=0 go build -ldflags "-s -w -X main.version=$(CDC_TRIGGER_VERSION)" -o $(OUTPUT) $(MAIN)
 	@echo "Build complete: $(OUTPUT)"
 
 check:

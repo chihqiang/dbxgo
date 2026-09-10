@@ -4,7 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/chihqiang/dbxgo/types"
+
+	"github.com/chihqiang/cdc-trigger/types"
 )
 
 // StdoutOutput Console output implementation

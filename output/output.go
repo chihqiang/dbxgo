@@ -2,8 +2,9 @@ package output
 
 import (
 	"context"
-	"github.com/chihqiang/dbxgo/types"
 	"time"
+
+	"github.com/chihqiang/cdc-trigger/types"
 )
 
 type OutputType string

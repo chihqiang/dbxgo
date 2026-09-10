@@ -1,5 +1,5 @@
 # ==========================================
-# dbxgo Configuration File Example (YAML)
+# cdc-trigger Configuration File Example (YAML)
 # ==========================================
 
 # ---------- Offset Storage Configuration ----------
@@ -28,7 +28,7 @@ source:
       - "performance_schema.*"
       - "sys.*"
     include_table_regex:      # Tables to include (regex patterns, empty = all except excluded)
-      - "dbxgo.*"             # Example: only listen to dbxgo tables
+      - "cdctrigger.*"        # Example: only listen to cdctrigger tables
 
 # ---------- Output Configuration ----------
 output:
@@ -38,13 +38,13 @@ output:
   kafka:
     brokers:
       - "127.0.0.1:9092"      # Kafka broker list
-    topic: "dbxgo-events"     # Kafka topic name
+    topic: "cdc-trigger-events"  # Kafka topic name
 
   # RabbitMQ settings
   rabbitmq:
     url: "amqp://guest:guest@127.0.0.1:5672/" # RabbitMQ connection URL
-    exchange: "dbxgo-exchange" # Exchange name
-    queue: "dbxgo-events"      # Queue name
+    exchange: "cdc-trigger-exchange" # Exchange name
+    queue: "cdc-trigger-events"      # Queue name
     durable: true              # Whether the queue should survive server restarts
     auto_delete: false         # Whether the queue should auto-delete when unused
     auto_ack: false            # Whether to auto-acknowledge messages
@@ -56,14 +56,14 @@ output:
     addr: "127.0.0.1:6379"     # Redis address
     password: ""               # Redis password
     db: 0                      # Redis database number
-    key: "dbxgo-events"        # Redis key for storing events
+    key: "cdc-trigger-events"  # Redis key for storing events
 
   # RocketMQ settings
   rocketmq:
     servers:
       - "127.0.0.1:9876"       # RocketMQ NameServer address
-    topic: "dbxgo-events"      # RocketMQ topic name
-    group: "dbxgo-group"       # Producer group name
+    topic: "cdc-trigger-events"  # RocketMQ topic name
+    group: "cdc-trigger-group"   # Producer group name
     namespace: ""              # Namespace
     access_key: ""             # Access key
     secret_key: ""             # Secret key
@@ -72,7 +72,7 @@ output:
   # Pulsar settings
   pulsar:
     url: "pulsar://127.0.0.1:6650"  # Pulsar broker URL
-    topic: "dbxgo-events"           # Pulsar topic name
+    topic: "cdc-trigger-events"       # Pulsar topic name
     token: "YOUR_PULSAR_TOKEN"      # Optional authentication token
     operation_timeout: 30           # Operation timeout in seconds
     connection_timeout: 30          # Connection timeout in seconds

@@ -7,7 +7,7 @@ MYSQL_HOST="localhost"
 MYSQL_PORT="3306"
 MYSQL_USER="root"
 MYSQL_PASSWORD="123456"
-MYSQL_DATABASE="dbxgo"
+MYSQL_DATABASE="cdctrigger"
 TABLE_NAME="test"
 INSERT_COUNT=5  # Number of random records to insert
 

@@ -31,5 +31,5 @@ go.work.sum
 /.idea/
 # .vscode/
 /*.pos
-/dbxgo
+/cdc-trigger
 /runtime/

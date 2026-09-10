@@ -8,8 +8,8 @@ import (
 	"github.com/apache/rocketmq-client-go/v2"
 	"github.com/apache/rocketmq-client-go/v2/primitive"
 	"github.com/apache/rocketmq-client-go/v2/producer"
-	"github.com/chihqiang/dbxgo/pkg/structx"
-	"github.com/chihqiang/dbxgo/types"
+	"github.com/chihqiang/cdc-trigger/pkg/structx"
+	"github.com/chihqiang/cdc-trigger/types"
 )
 
 // RocketMQConfig RocketMQ configuration entity
@@ -17,7 +17,7 @@ type RocketMQConfig struct {
 	// Servers - RocketMQ NameServer address list, e.g., ["127.0.0.1:9876"]
 	Servers []string `yaml:"servers" json:"servers" mapstructure:"servers" env:"OUTPUT_ROCKETMQ_SERVERS" envDefault:"127.0.0.1:9876"`
 	// Topic - The topic name to send the message
-	Topic string `yaml:"topic" json:"topic" mapstructure:"topic" env:"OUTPUT_ROCKETMQ_TOPIC" envDefault:"dbxgo-events"`
+	Topic string `yaml:"topic" json:"topic" mapstructure:"topic" env:"OUTPUT_ROCKETMQ_TOPIC" envDefault:"cdc-trigger-events"`
 	// Group - The producer group name
 	Group string `yaml:"group" json:"group" mapstructure:"group" env:"OUTPUT_ROCKETMQ_GROUP"`
 	// Retry - The number of retries if sending a message fails

@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"github.com/caarlos0/env/v11"
-	"github.com/chihqiang/dbxgo/output"
-	"github.com/chihqiang/dbxgo/source"
-	"github.com/chihqiang/dbxgo/store"
+	"github.com/chihqiang/cdc-trigger/output"
+	"github.com/chihqiang/cdc-trigger/source"
+	"github.com/chihqiang/cdc-trigger/store"
 	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v3"
 )

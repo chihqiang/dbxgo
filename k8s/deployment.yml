@@ -2,8 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: dbxgo
-  name: dbxgo
+    app: cdc-trigger
+  name: cdc-trigger
   namespace: kube-middleware
 spec:
   progressDeadlineSeconds: 600
@@ -11,11 +11,11 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      app: dbxgo
+      app: cdc-trigger
   template:
     metadata:
       labels:
-        app: dbxgo
+        app: cdc-trigger
     spec:
       containers:
         - env:
@@ -27,9 +27,9 @@ spec:
               value: 123456
             - name: SOURCE_MYSQL_EXCLUDE_TABLE_REGEX
               value: "mysql.*,information_schema.*,performance_schema.*,sys.*"
-          image: zhiqiangwang/dbxgo:latest
+          image: zhiqiangwang/cdc-trigger:latest
           imagePullPolicy: Always
-          name: dbxgo
+          name: cdc-trigger
           resources:
             limits:
               cpu: '1'

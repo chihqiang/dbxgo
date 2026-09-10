@@ -1,4 +1,4 @@
-module github.com/chihqiang/dbxgo
+module github.com/chihqiang/cdc-trigger
 
 go 1.25.14
 
