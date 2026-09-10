@@ -6,7 +6,7 @@ import (
 
 type StoreType string
 
-const keyPrefix = "dbxgo-"
+const keyPrefix = "cdc-trigger-"
 
 const (
 	// FileStoreType Type for File Store

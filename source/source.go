@@ -3,12 +3,14 @@ package source
 import (
 	"context"
 	"fmt"
-	"github.com/chihqiang/dbxgo/store"
-	"github.com/chihqiang/dbxgo/types"
+
+	"github.com/chihqiang/cdc-trigger/store"
+	"github.com/chihqiang/cdc-trigger/types"
 )
 
 const (
-	StoreKeyPosition = "_dbxgo_position"
+	// StoreKeyPosition binlog 位点存储 key
+	StoreKeyPosition = "_cdc_trigger_position"
 )
 
 type SourceType string

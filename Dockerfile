@@ -4,7 +4,7 @@
 FROM golang:1.25.14-bookworm AS builder
 
 # Set build-time argument for version
-ARG DBXGO_VERSION=main
+ARG CDC_TRIGGER_VERSION=main
 
 # Install dependencies for building Go project
 RUN apt-get update && apt-get install -y git make gcc libc6-dev && rm -rf /var/lib/apt/lists/*
@@ -16,7 +16,7 @@ WORKDIR /app
 COPY . .
 
 # Build the Go binary with the specified version
-RUN GOOS=linux make build DBXGO_VERSION=${DBXGO_VERSION}
+RUN GOOS=linux make build CDC_TRIGGER_VERSION=${CDC_TRIGGER_VERSION}
 
 # ---------- Runtime stage ----------
 # Use minimal Debian image for runtime
@@ -56,19 +56,19 @@ ENV OUTPUT_TYPE=stdout
 
 
 # Create a non-root user for security
-RUN useradd --system --no-create-home --shell /usr/sbin/nologin dbxgo
+RUN useradd --system --no-create-home --shell /usr/sbin/nologin cdctrigger
 
 # Copy the built binary from builder stage
-COPY --from=builder /app/dbxgo /usr/local/bin/dbxgo
+COPY --from=builder /app/cdc-trigger /usr/local/bin/cdc-trigger
 
 # Set ownership to the non-root user
-RUN chown dbxgo:dbxgo /usr/local/bin/dbxgo
+RUN chown cdctrigger:cdctrigger /usr/local/bin/cdc-trigger
 
 # Switch to non-root user
-USER dbxgo
+USER cdctrigger
 
 # Set working directory
 WORKDIR /app
 
 # Default command to run the binary
-CMD ["dbxgo","-c","/app/config.yaml"]
+CMD ["cdc-trigger","-c","/app/config.yaml"]

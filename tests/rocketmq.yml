@@ -3,18 +3,18 @@
 services:
   mysql:
     image: mysql:8.0
-    container_name: dbxgo-mysql
+    container_name: cdc-trigger-mysql
     restart: always
     ports:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: dbxgo
+      MYSQL_DATABASE: cdctrigger
       TZ: Asia/Shanghai
     volumes:
-      - ./:/dbxgo
+      - ./:/cdc-trigger
     networks:
-      - dbxgo-network
+      - cdc-trigger-network
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p123456" ]
       interval: 5s
@@ -23,9 +23,9 @@ services:
 
   rocketmq-nameserver:
     image: apache/rocketmq:4.9.7
-    container_name: dbxgo-rocketmq-nameserver
+    container_name: cdc-trigger-rocketmq-nameserver
     networks:
-      - dbxgo-network
+      - cdc-trigger-network
     ports:
       - "9876:9876"
     environment:
@@ -40,9 +40,9 @@ services:
 
   rocketmq-broker:
     image: apache/rocketmq:4.9.7
-    container_name: dbxgo-rocketmq-broker
+    container_name: cdc-trigger-rocketmq-broker
     networks:
-      - dbxgo-network
+      - cdc-trigger-network
     ports:
       - "10911:10911"
       - "10909:10909"
@@ -63,14 +63,14 @@ services:
       start_period: 30s
   rocketmq-init:
     image: apache/rocketmq:4.9.7
-    container_name: dbxgo-rocketmq-init
+    container_name: cdc-trigger-rocketmq-init
     networks:
-      - dbxgo-network
+      - cdc-trigger-network
     depends_on:
       rocketmq-broker:
         condition: service_healthy
-    command: sh -c "sh mqadmin updateTopic -n rocketmq-nameserver:9876 -c DefaultCluster -t dbxgo-events"
+    command: sh -c "sh mqadmin updateTopic -n rocketmq-nameserver:9876 -c DefaultCluster -t cdc-trigger-events"
     restart: "no"
 networks:
-  dbxgo-network:
+  cdc-trigger-network:
     driver: bridge

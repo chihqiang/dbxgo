@@ -4,17 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/chihqiang/dbxgo/pkg/cmdx"
-	"github.com/chihqiang/dbxgo/store"
-	"github.com/chihqiang/dbxgo/types"
+	"strconv"
+	"sync"
+	"time"
+
+	"github.com/chihqiang/cdc-trigger/pkg/cmdx"
+	"github.com/chihqiang/cdc-trigger/store"
+	"github.com/chihqiang/cdc-trigger/types"
 	"github.com/chihqiang/logx"
 	"github.com/go-mysql-org/go-mysql/canal"
 	"github.com/go-mysql-org/go-mysql/mysql"
 	"github.com/go-mysql-org/go-mysql/replication"
 	"github.com/go-mysql-org/go-mysql/schema"
-	"strconv"
-	"sync"
-	"time"
 )
 
 var (

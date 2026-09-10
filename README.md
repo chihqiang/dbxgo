@@ -1,15 +1,15 @@
 <div align="center">
-<h1>dbxgo</h1>
+<h1>cdc-trigger</h1>
 
 [![Auth](https://img.shields.io/badge/Auth-chihqiang-ff69b4)](https://github.com/chihqiang)
-[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/chihqiang/dbxgo)](https://github.com/chihqiang/dbxgo/pulls)
-[![Release](https://img.shields.io/github/release/chihqiang/dbxgo.svg?style=flat-square)](https://github.com/chihqiang/dbxgo/releases)
-[![GitHub Pull Requests](https://img.shields.io/github/stars/chihqiang/dbxgo)](https://github.com/chihqiang/dbxgo/stargazers)
-[![HitCount](https://views.whatilearened.today/views/github/chihqiang/dbxgo.svg)](https://github.com/chihqiang/dbxgo)
-[![GitHub license](https://img.shields.io/github/license/chihqiang/dbxgo)](https://github.com/chihqiang/dbxgo/blob/main/LICENSE)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/chihqiang/cdc-trigger)](https://github.com/chihqiang/cdc-trigger/pulls)
+[![Release](https://img.shields.io/github/release/chihqiang/cdc-trigger.svg?style=flat-square)](https://github.com/chihqiang/cdc-trigger/releases)
+[![GitHub Pull Requests](https://img.shields.io/github/stars/chihqiang/cdc-trigger)](https://github.com/chihqiang/cdc-trigger/stargazers)
+[![HitCount](https://views.whatilearened.today/views/github/chihqiang/cdc-trigger.svg)](https://github.com/chihqiang/cdc-trigger)
+[![GitHub license](https://img.shields.io/github/license/chihqiang/cdc-trigger)](https://github.com/chihqiang/cdc-trigger/blob/main/LICENSE)
 
 <p>
- dbxgo is an efficient Go-based Change Data Capture (CDC) tool that real-time monitors database changes, parses and processes events, and sends them to message queues or other downstream systems.
+ cdc-trigger is an efficient Go-based Change Data Capture (CDC) tool that real-time monitors database changes, parses and processes events, and sends them to message queues or other downstream systems.
 </p>
 
 </div>
@@ -64,21 +64,21 @@
 
 ### Option 1: Install via `go install` (Recommended)
 
-This is the simplest and recommended way to install **dbxgo**:
+This is the simplest and recommended way to install **cdc-trigger**:
 
 ```bash
-go install github.com/chihqiang/dbxgo/cmd/dbxgo@latest
+go install github.com/chihqiang/cdc-trigger/cmd/cdc-trigger@latest
 ```
 
 ### Option 2: Build from Source
 
 If you want to modify the source code or contribute to development, build from source:
 
-```
+```bash
 # Clone the repository
-git clone https://github.com/chihqiang/dbxgo.git
-cd dbxgo && make build
-cp ./dbxgo /usr/local/bin/
+git clone https://github.com/chihqiang/cdc-trigger.git
+cd cdc-trigger && make build
+cp ./cdc-trigger /usr/local/bin/
 ```
 
 ### Usage Example
@@ -89,11 +89,11 @@ cp ./dbxgo /usr/local/bin/
 
 ```bash
 # Using the default config.yml
-dbxgo
+cdc-trigger
 # Using a specific config file
-dbxgo -c path/to/config.yml
+cdc-trigger -c path/to/config.yml
 # Explicitly using the listen command
-dbxgo listen -c path/to/config.yml
+cdc-trigger listen -c path/to/config.yml
 ```
 
 ## Configuration File Description
@@ -104,7 +104,7 @@ The configuration file uses YAML format and consists of three main parts: `store
 
 ```yaml
 # ==========================================
-# dbxgo Configuration File Example (YAML)
+# cdc-trigger Configuration File Example (YAML)
 # ==========================================
 
 # ---------- Offset Storage Configuration ----------
@@ -133,7 +133,7 @@ source:
       - "performance_schema.*"
       - "sys.*"
     include_table_regex:      # Tables to include (regex patterns, empty = all except excluded)
-      - "dbxgo.*"             # Example: only listen to dbxgo tables
+      - "cdctrigger.*"        # Example: only listen to cdctrigger tables
 
 # ---------- Output Configuration ----------
 output:
@@ -143,13 +143,13 @@ output:
   kafka:
     brokers:
       - "127.0.0.1:9092"      # Kafka broker list
-    topic: "dbxgo-events"     # Kafka topic name
+    topic: "cdc-trigger-events"  # Kafka topic name
 
   # RabbitMQ settings
   rabbitmq:
     url: "amqp://guest:guest@127.0.0.1:5672/" # RabbitMQ connection URL
-    exchange: "dbxgo-exchange" # Exchange name
-    queue: "dbxgo-events"      # Queue name
+    exchange: "cdc-trigger-exchange" # Exchange name
+    queue: "cdc-trigger-events"      # Queue name
     durable: true              # Whether the queue should survive server restarts
     auto_delete: false         # Whether the queue should auto-delete when unused
     auto_ack: false            # Whether to auto-acknowledge messages
@@ -161,14 +161,14 @@ output:
     addr: "127.0.0.1:6379"     # Redis address
     password: ""               # Redis password
     db: 0                      # Redis database number
-    key: "dbxgo-events"        # Redis key for storing events
+    key: "cdc-trigger-events"  # Redis key for storing events
 
   # RocketMQ settings
   rocketmq:
     servers:
       - "127.0.0.1:9876"       # RocketMQ NameServer address
-    topic: "dbxgo-events"      # RocketMQ topic name
-    group: "dbxgo-group"       # Producer group name
+    topic: "cdc-trigger-events"  # RocketMQ topic name
+    group: "cdc-trigger-group"   # Producer group name
     namespace: ""              # Namespace
     access_key: ""             # Access key
     secret_key: ""             # Secret key
@@ -177,7 +177,7 @@ output:
   # Pulsar settings
   pulsar:
     url: "pulsar://127.0.0.1:6650"  # Pulsar broker URL
-    topic: "dbxgo-events"           # Pulsar topic name
+    topic: "cdc-trigger-events"       # Pulsar topic name
     token: "YOUR_PULSAR_TOKEN"      # Optional authentication token
     operation_timeout: 30           # Operation timeout in seconds
     connection_timeout: 30          # Connection timeout in seconds
@@ -185,24 +185,24 @@ output:
 
 ## Docker Deployment
 
-You can use Docker to run dbxgo in containerized environments. Here's how to build and run dbxgo with Docker:
+You can use Docker to run cdc-trigger in containerized environments. Here's how to build and run cdc-trigger with Docker:
 
 ```bash
 # =========================
 # 1️⃣ MySQL only (read from MySQL)
 # =========================
 docker run -it --rm \
-    --name dbxgo \
+    --name cdc-trigger \
     -e SOURCE_MYSQL_ADDR="127.0.0.1:3306" \
     -e SOURCE_MYSQL_USER="root" \
     -e SOURCE_MYSQL_PASSWORD="123456" \
-    zhiqiangwang/dbxgo:latest
+    zhiqiangwang/cdc-trigger:latest
 
 # =========================
 # 2️⃣ MySQL → Redis & Redis
 # =========================
 docker run -it --rm \
-    --name dbxgo \
+    --name cdc-trigger \
     -e SOURCE_MYSQL_ADDR="127.0.0.1:3306" \
     -e SOURCE_MYSQL_USER="root" \
     -e SOURCE_MYSQL_PASSWORD="123456" \
@@ -214,8 +214,8 @@ docker run -it --rm \
     -e OUTPUT_REDIS_ADDR="127.0.0.1:6379" \
     -e OUTPUT_REDIS_PASSWORD="123456" \
     -e OUTPUT_REDIS_DB="1" \
-    -e OUTPUT_REDIS_KEY="dbxgo-events" \
-    zhiqiangwang/dbxgo:latest
+    -e OUTPUT_REDIS_KEY="cdc-trigger-events" \
+    zhiqiangwang/cdc-trigger:latest
 ```
 
 ## Notes
@@ -228,13 +228,13 @@ docker run -it --rm \
 
 ```sql
 -- Create an account
-CREATE USER 'dbxgo'@'%' IDENTIFIED BY 'strong_password';
+CREATE USER 'cdctrigger'@'%' IDENTIFIED BY 'strong_password';
 
 -- Authorization (the REPLICATION permission is required to read the binlog)
-GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'dbxgo'@'%';
+GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'cdctrigger'@'%';
 
--- If dbxgo needs to do metadata queries, it also needs read permissions
-GRANT SELECT ON *.* TO 'dbxgo'@'%';
+-- If cdc-trigger needs to do metadata queries, it also needs read permissions
+GRANT SELECT ON *.* TO 'cdctrigger'@'%';
 
 -- Refresh permissions
 FLUSH PRIVILEGES;

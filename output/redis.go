@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/chihqiang/dbxgo/pkg/redisx"
-	"github.com/chihqiang/dbxgo/pkg/structx"
-	"github.com/chihqiang/dbxgo/types"
+
+	"github.com/chihqiang/cdc-trigger/pkg/redisx"
+	"github.com/chihqiang/cdc-trigger/pkg/structx"
+	"github.com/chihqiang/cdc-trigger/types"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -15,7 +16,7 @@ type RedisConfig struct {
 	Addr     string `yaml:"addr" json:"addr" mapstructure:"addr" env:"OUTPUT_REDIS_ADDR" envDefault:"127.0.0.1:6379"`
 	Password string `yaml:"password" json:"password" mapstructure:"password" env:"OUTPUT_REDIS_PASSWORD" envDefault:""`
 	DB       int    `yaml:"db" json:"db" mapstructure:"db" env:"OUTPUT_REDIS_DB" envDefault:"0"`
-	Key      string `yaml:"key" json:"key" mapstructure:"key" env:"OUTPUT_REDIS_KEY" envDefault:"dbxgo-events"`
+	Key      string `yaml:"key" json:"key" mapstructure:"key" env:"OUTPUT_REDIS_KEY" envDefault:"cdc-trigger-events"`
 }
 
 type RedisOutput struct {

@@ -31,7 +31,7 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            zhiqiangwang/dbxgo:nightly
-            zhiqiangwang/dbxgo:latest
+            zhiqiangwang/cdc-trigger:nightly
+            zhiqiangwang/cdc-trigger:latest
           build-args: |
-            DBXGO_VERSION=${{ github.sha }}
+            CDC_TRIGGER_VERSION=${{ github.sha }}

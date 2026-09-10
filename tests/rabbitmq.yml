@@ -3,18 +3,18 @@
 services:
   mysql:
     image: mysql:8.0
-    container_name: dbxgo-mysql
+    container_name: cdc-trigger-mysql
     restart: always
     ports:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: dbxgo
+      MYSQL_DATABASE: cdctrigger
       TZ: Asia/Shanghai
     volumes:
-      - ./:/dbxgo
+      - ./:/cdc-trigger
     networks:
-      - dbxgo-network
+      - cdc-trigger-network
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p123456" ]
       interval: 5s
@@ -23,7 +23,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: dbxgo-rabbitmq
+    container_name: cdc-trigger-rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -32,7 +32,7 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
       TZ: Asia/Shanghai
     networks:
-      - dbxgo-network
+      - cdc-trigger-network
     healthcheck:
       test: [ "CMD", "rabbitmqctl", "status" ]
       interval: 30s
@@ -41,5 +41,5 @@ services:
       start_period: 10s
 
 networks:
-  dbxgo-network:
+  cdc-trigger-network:
     driver: bridge

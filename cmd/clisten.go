@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"runtime"
 
+	"github.com/chihqiang/cdc-trigger/config"
+	"github.com/chihqiang/cdc-trigger/output"
+	"github.com/chihqiang/cdc-trigger/source"
 	"github.com/chihqiang/cli"
-	"github.com/chihqiang/dbxgo/config"
-	"github.com/chihqiang/dbxgo/output"
-	"github.com/chihqiang/dbxgo/source"
 	"github.com/chihqiang/logx"
 )
 
